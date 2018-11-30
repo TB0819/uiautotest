@@ -1,0 +1,87 @@
+#设备基本信息
+appiumJsPath: ""
+mobileVersion: ""
+appActivity: ""
+appPackage: ""
+udid: ""
+# 页面URL
+pageUrl: ""
+# 截图路径
+screenshotPath: ""
+#遍历深度
+maxDepth:  5
+
+#等待时间(单位：秒)
+waitSec: 8
+
+#待输入的文本
+inputTestList:
+  - "123"
+  - "ABC"
+
+# 最新遍历
+firstList:
+  - "//android.widget.EditText"
+  - "//*[@text='仓库设置']"
+  - "//*[@text='采购订单']"
+  - "//*[@text='通道管理']"
+
+# 遍历集合
+selectedList:
+  - "//*[@clickable='true' and @enabled='true']"
+
+# 最后遍历
+lastList:
+  - "//*[@text='取消']"
+  - "//*[@text='保存']"
+  - "//*[@text='编辑']"
+  - "//*[@text='首页']"
+  - "//*[@resource-id='zmsoft.rest.supply:id/linear_left']"
+
+# 黑名单
+blackList:
+  - "//*[@text='返回']"
+  - "//*[@text='筛选']"
+  - "//*[@text='分类']"
+  - "//*[@resource-id='zmsoft.rest.supply:id/filter_btn']"
+  - "//android.widget.GridView"
+  - "//*[@resource-id='zmsoft.rest.supply:id/view_home_section']"
+  - "//android.widget.ListView"
+  - "//*[@resource-id='zmsoft.rest.supply:id/help']"
+  - "//*[@resource-id='zmsoft.rest.supply:id/help_cusomter']"
+  - "//*[@resource-id='zmsoft.rest.supply:id/search_view_layout']"
+
+# 白名单
+whiteList:
+  - "//*[@text='返回']"
+  - "//*[@text='筛选']"
+
+# 某些场景特殊处理机制，如：弹框
+triggerList:
+  - action: "click"
+    xpath: "//*[@text='我知道了']"
+    page: ""
+  - action: "click"
+    xpath: "//*[@text='确定']"
+    page: ""
+  - action: "click"
+    xpath: "//*[@text='确认']"
+    page: ""
+
+startPageAndroidStep:
+  - action: "click"
+    xpath: "//*[@text='步骤1']"
+    value: ""
+  - action: "click"
+    xpath: "//*[@text='步骤2']"
+  - action: "click"
+    xpath: "//*[@text='步骤3']"
+
+#当发现App跳转到以下app时 会触发back键
+#pressBackPackageList:
+
+#除了APP本身的包名外 根据以下包名判断是否跳出了APP,当app跳转到以下app时被认为是合法，会继续遍历操作
+androidValidPackageList:
+  - ""
+#同ANDROID_VALID_PACKAGE_LIST
+#iosValidPackageList:
