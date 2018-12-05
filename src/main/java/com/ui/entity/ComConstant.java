@@ -21,6 +21,7 @@ public class ComConstant {
     public static final String APP_PACKAGE = "package";
 
     /*============================================= 路径 =============================================*/
+    public static final String LOG_PATH = System.getProperty("user.dir") + "/src/main/resources/log4j.properties";
     public static final String CONFIG_PATH = System.getProperty("user.dir") + "/src/main/resources/config.yml";
     public static final String DEFAULT_SCREENSHOT_PATH = System.getProperty("user.dir") + "/target/screenshot";
     public static final String DEFAULT_SCREENSHOT_ANDROID_PATH = "/android";

@@ -121,8 +121,14 @@ public class CommonUtil {
      * @param driver    Appium服务驱动
      * @return  返回截图路径
      */
-    public static String captureScreenShot(AppiumDriver driver){
-        String capturedScreen = ComConstant.DEFAULT_SCREENSHOT_PATH + ComConstant.DEFAULT_SCREENSHOT_ANDROID_PATH + getCurrentTime()+ ".png";
+    public static String captureScreenShot(AppiumDriver driver,Config config){
+        String capturedScreen;
+        String screenPath = config.getScreenshotPath();
+        if (!screenPath.isEmpty() && screenPath != null){
+            capturedScreen = screenPath + ComConstant.DEFAULT_SCREENSHOT_ANDROID_PATH + getCurrentTime()+ ".png";
+        }else {
+            capturedScreen = ComConstant.DEFAULT_SCREENSHOT_PATH + ComConstant.DEFAULT_SCREENSHOT_ANDROID_PATH + getCurrentTime()+ ".png";
+        }
         try {
             File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
             FileUtils.copyFile(scrFile, new File(capturedScreen));

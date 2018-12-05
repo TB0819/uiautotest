@@ -1,5 +1,6 @@
 package com.ui.util;
 
+import com.ui.entity.ComConstant;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PropertyConfigurator;
 
@@ -11,11 +12,10 @@ import java.io.File;
  */
 public class Log {
 	private static Logger logger;
-	private static String filePath = System.getProperty("user.dir") + "/log4j.properties";
-	
+
 	static {
         logger = Logger.getLogger("sys_log");
-        PropertyConfigurator.configure(new File(filePath).getAbsolutePath());
+        PropertyConfigurator.configure(new File(ComConstant.LOG_PATH).getAbsolutePath());
     }
 	
 	public static void logInfo(Object message) {

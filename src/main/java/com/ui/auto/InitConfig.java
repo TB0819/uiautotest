@@ -18,9 +18,10 @@ import java.util.Map;
  */
 public class InitConfig {
 	public Config config;
+	private boolean status;
 
 	private InitConfig() {
-		loadConfig();
+		this.status = loadConfig();
 	}
 
 	private List<String> stringConvertList(Map map, String type) {
@@ -35,16 +36,27 @@ public class InitConfig {
 	/**
 	 * 加载配置文件
 	 */
-	public void loadConfig(){
+	public boolean loadConfig(){
+		boolean flag = false;
 		Yaml yaml = new Yaml();
 		try {
 			config = yaml.loadAs(new FileInputStream(new File(ComConstant.CONFIG_PATH)), Config.class);
 			createSnapshotPath();
+			flag = false;
 		} catch (FileNotFoundException e) {
+			flag = true;
 			Log.logError("初始化Config配置文件失败",e);
 		}
+		return flag;
 	}
 
+	/**
+	 * 获取加载配置文件状态
+	 * @return
+	 */
+	public boolean getInitStatus(){
+		return status;
+	}
 	/**
 	 * 创建系统截图目录(Android或者IOS)
 	 */

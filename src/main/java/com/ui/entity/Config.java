@@ -48,11 +48,20 @@ public class Config {
     private String appActivity;
     private String appPackage;
     private String udid;
+    private String deviceName;
     private int deviceHeight;
     private int deviceWidth;
 
     public List<Trigger> getStartPageAndroidStep() {
         return startPageAndroidStep;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 
     public void setStartPageAndroidStep(List<Trigger> startPageAndroidStep) {

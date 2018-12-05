@@ -256,7 +256,7 @@ public class Crawler {
                 // 统一根据xpth查找元素
                 WebElement element = driver.findElementByXPath(elementNode.getXpath());
                 //截图并异步处理高亮
-                new AsynTask().executeTask(CommonUtil.captureScreenShot(driver),elementNode);
+                new AsynTask().executeTask(CommonUtil.captureScreenShot(driver,config),elementNode);
                 switch (actionEnum) {
                     case CLICK:
                         element.click();
@@ -289,14 +289,17 @@ public class Crawler {
      * @return
      */
     private boolean isExit(){
-        boolean flag = false;
         String currentPackage = getCurrentAppName(driver.getPageSource());
-        flag = isValidPackage(currentPackage);
-        return flag;
+        return isValidPackage(currentPackage)?false:true;
     }
 
     private boolean isValidPackage(String currentPackage){
         boolean flag = false;
+        // 判断是否是当前app
+        if (currentPackage.contains(config.getAppPackage())){
+            flag = true;
+            return flag;
+        }
         // 判断包名是否有效
         for(String packageName: config.getAndroidValidPackageList()){
             if (currentPackage != null && currentPackage.contains(packageName)){

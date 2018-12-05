@@ -29,6 +29,7 @@ public class AppiumManager {
         // 设置设备属性
         DesiredCapabilities androidCapabilities = new DesiredCapabilities();
         androidCapabilities.setCapability(MobileCapabilityType.PLATFORM_NAME, "Android");
+        androidCapabilities.setCapability(MobileCapabilityType.DEVICE_NAME, config.getDeviceName());
         androidCapabilities.setCapability(MobileCapabilityType.PLATFORM_VERSION, config.getMobileVersion());
         androidCapabilities.setCapability(AndroidMobileCapabilityType.APP_ACTIVITY, config.getAppActivity());
         androidCapabilities.setCapability(AndroidMobileCapabilityType.APP_PACKAGE, config.getAppPackage());

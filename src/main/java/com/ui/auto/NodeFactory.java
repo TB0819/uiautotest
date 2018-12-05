@@ -57,12 +57,14 @@ public class NodeFactory {
         pageNode.setNodeStatus(elementNodes.isEmpty()?NodeStatus.SKIP: NodeStatus.EXECUTING);
         pageNode.setParentNode(parentNode);
         pageNode.setParentElement(parentElement);
-        pageNode.setCrawlerLoc("/"+parentNode.getUrl()+"_"+ parentElement.getXpath());
         pageNode.setDepth(pageDepth);
         pageNode.setAllElementNodes(elementNodes);
         pageNode.setStackElementNodes(taskStack);
-        //  将当前页面节点加入父页面对象中
-        parentNode.addSonPage(pageNode);
+        //  TODO 父节点暂时不放置，将当前页面节点加入父页面对象中
+        if (parentNode != null){
+            parentNode.addSonPage(pageNode);
+            pageNode.setCrawlerLoc("/"+parentNode.getUrl()+"_"+ parentElement.getXpath());
+        }
         return pageNode;
     }
 

@@ -12,8 +12,11 @@ import io.appium.java_client.AppiumDriver;
 public class StartMain {
 
     public static void main(String[] args){
-        // 初始化配置文件
-        Config config  = InitConfig.getInstance().config;
+        // 初始化配置文件,加载失败则终止运行
+        InitConfig initConfig = InitConfig.getInstance();
+        if (initConfig.getInitStatus()){
+            System.exit(0);
+        }
         // 启动服务
         AppiumManager manager =  new AppiumManager();
         AppiumDriver driver = manager.driverForAndroid();

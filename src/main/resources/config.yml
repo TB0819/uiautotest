@@ -1,18 +1,19 @@
 #设备基本信息
-appiumJsPath: ""
-mobileVersion: ""
-appActivity: ""
-appPackage: ""
-udid: ""
+appiumJsPath: "C:\\Users\\Administrator\\node_modules\\appium\\build\\lib\\main.js"
+mobileVersion: "6.X"
+appActivity: ".ui.AppSplash"
+appPackage: "zmsoft.rest.supply"
+udid: "3DN4C16919001533"
+deviceName: "华为G9"
 # 页面URL
 pageUrl: ""
 # 截图路径
-screenshotPath: ""
+screenshotPath: "D:\\appuitest"
 #遍历深度
 maxDepth:  5
 
 #等待时间(单位：秒)
-waitSec: 8
+waitSec: 3
 
 #待输入的文本
 inputTestList:
@@ -70,12 +71,7 @@ triggerList:
 
 startPageAndroidStep:
   - action: "click"
-    xpath: "//*[@text='步骤1']"
-    value: ""
-  - action: "click"
-    xpath: "//*[@text='步骤2']"
-  - action: "click"
-    xpath: "//*[@text='步骤3']"
+    xpath: "//*[@text='仓库设置']"
 
 #当发现App跳转到以下app时 会触发back键
 #pressBackPackageList:
