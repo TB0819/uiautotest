@@ -256,7 +256,11 @@ public class Crawler {
                 // 统一根据xpth查找元素
                 WebElement element = driver.findElementByXPath(elementNode.getXpath());
                 //截图并异步处理高亮
-                new AsynTask().executeTask(CommonUtil.captureScreenShot(driver,config),elementNode);
+                String screenShot = CommonUtil.captureScreenShot(driver,config);
+                if (element != null){
+                    new AsynTask().executeTask(screenShot,elementNode);
+                }
+                elementNode.setScreenShotPath(screenShot);
                 switch (actionEnum) {
                     case CLICK:
                         element.click();

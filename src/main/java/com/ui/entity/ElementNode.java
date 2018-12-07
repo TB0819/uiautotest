@@ -17,6 +17,7 @@ public class ElementNode {
      *  nodeStatus：     元素执行状态
      *  action：         元素执行动作
      *  crawlerLoc：     元素xMind路径
+     *  screenShotPath： 点击元素的截图路径
      */
     private String pageUrl;
     private String name;
@@ -28,6 +29,15 @@ public class ElementNode {
     private NodeStatus nodeStatus;
     private ActionEnum action;
     private String crawlerLoc;
+    private String screenShotPath;
+
+    public String getScreenShotPath() {
+        return screenShotPath;
+    }
+
+    public void setScreenShotPath(String screenShotPath) {
+        this.screenShotPath = screenShotPath;
+    }
 
     public String getCrawlerLoc() {
         return crawlerLoc;
