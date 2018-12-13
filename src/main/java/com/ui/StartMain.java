@@ -25,6 +25,6 @@ public class StartMain {
         // 执行进入遍历页面步骤
         crawler.initStartPage();
         // 遍历开始
-        crawler.crwal();
+        crawler.crawl();
     }
 }

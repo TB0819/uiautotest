@@ -77,7 +77,7 @@ public class NodeFactory {
      */
     public List<ElementNode> getPageElements(String pageUrl, Element rootElement) {
         Map<String, Element> selectElements, blackElements, firstElements, lastElements;
-        List<ElementNode> nodes = new ArrayList<>();
+        List<ElementNode> crawlerNodes = new ArrayList<>();
         List<Map<String, Element>> elements = new ArrayList<>();
 
         // 获取所有遍历元素
@@ -100,17 +100,17 @@ public class NodeFactory {
         elements.add(lastElements);
         //判断页面没有可执行节点，直接退出
         if (elements.isEmpty()){
-            return nodes;
+            return crawlerNodes;
         }
         //创建页面元素对象
         for (Map<String, Element> m : elements) {
             for (Map.Entry<String, Element> entry : m.entrySet()) {
-                nodes.add(createElementNode(entry.getValue(), pageUrl));
+                crawlerNodes.add(createElementNode(entry.getValue(), pageUrl));
             }
         }
         // List集合顺序反转
-        Collections.reverse(nodes);
-        return nodes;
+        Collections.reverse(crawlerNodes);
+        return crawlerNodes;
     }
 
     /**
@@ -201,8 +201,8 @@ public class NodeFactory {
 
     /**
      * 根据键值(节点的xpath路径)相同或包含去重
-     * @param sourceMap
-     * @param repeatMap
+     * @param sourceMap     源集合
+     * @param repeatMap     过滤集合
      * @return
      */
     private Map<String, Element> intersect(Map<String, Element> sourceMap, Map<String, Element> repeatMap) {
