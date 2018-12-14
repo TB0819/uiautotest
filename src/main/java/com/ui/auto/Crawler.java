@@ -257,20 +257,16 @@ public class Crawler {
      */
     private boolean isExit(){
         String currentPackage = getCurrentAppName(driver.getPageSource());
-        return isValidPackage(currentPackage)?false:true;
-    }
 
-    private boolean isValidPackage(String currentPackage){
-        boolean flag = false;
+        boolean flag = true;
         // 判断是否是当前app
         if (currentPackage.contains(config.getAppPackage())){
-            flag = true;
-            return flag;
+            return false;
         }
         // 判断包名是否有效
         for(String packageName: config.getAndroidValidPackageList()){
             if (currentPackage != null && currentPackage.contains(packageName)){
-                flag = true;
+                flag = false;
                 break;
             }
         }

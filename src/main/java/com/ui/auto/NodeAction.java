@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Random;
 
 /**
+ * TODO 后续改成接口动态代理方式提供可修改
  * 页面元素操作抽象类
  */
 public abstract class NodeAction {
