@@ -11,9 +11,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.openqa.selenium.WebElement;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 /**
  * TODO 1、crash 重启服务并定位出现节点重跑
@@ -32,7 +30,8 @@ public class Crawler {
     //页面任务栈
     private Stack<PageNode> taskPageStack = new Stack<PageNode>();
     //访问过的页面集合
-    private List<PageNode>  AllPageNodes = new ArrayList<PageNode>();
+    private List<PageNode>  allPageNodes = new ArrayList<PageNode>();
+    private Map<String,PageNode> allPageNodeMaps = new HashMap<String,PageNode>();
     //当前页面元素任务栈
     private Stack<ElementNode> currentElementStack;
     private Config config  = InitConfig.getInstance().config;
@@ -114,7 +113,8 @@ public class Crawler {
                     nodeActionHandler.runAction(ActionEnum.BACK,null);
                     continue;
                 }
-                AllPageNodes.add(newPageNode);
+                allPageNodes.add(newPageNode);
+                allPageNodeMaps.put(newPageNode.getUrl(),newPageNode);
                 //情况1.2：页面没有可执行元素，跳过遍历，不加入任务栈中，并触发返回操作
                 if (newPageNode.getNodeStatus() == NodeStatus.SKIP){
                     nodeActionHandler.runAction(ActionEnum.BACK,null);
@@ -199,7 +199,7 @@ public class Crawler {
      * @return
      */
     private PageNode getExistPageForAllPageNodes(String pageUrl){
-        for (PageNode pageNode: AllPageNodes){
+        for (PageNode pageNode: allPageNodes){
             if (pageNode.getUrl().equals(pageUrl)){
                 return pageNode;
             }
@@ -290,7 +290,7 @@ public class Crawler {
     }
 
     public void drawXmind(){
-        AllPageNodes.stream().filter(p -> p.getDepth() == 1).forEach(p -> createXmindNode(p));
+        allPageNodes.stream().filter(p -> p.getDepth() == 1).forEach(p -> createXmindNode(p));
         mindUtil.closeMind();
     }
 
