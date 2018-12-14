@@ -7,31 +7,19 @@ import com.ui.util.CommonUtil;
 import com.ui.util.Log;
 import com.ui.util.MindUtil;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.nativekey.AndroidKey;
-import io.appium.java_client.android.nativekey.KeyEvent;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
-import org.openqa.selenium.NoSuchElementException;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebElement;
 
-import javax.imageio.ImageIO;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.Stack;
-import java.util.concurrent.TimeUnit;
 
 /**
  * TODO 1、crash 重启服务并定位出现节点重跑
  * TODO 2、生成遍历路径(xMind)
+ * TODO 3、一页显示不下，滑屏处理
+ * TODO 4、列表页面相同控件处理
  * 遍历实现类
  */
 public class Crawler {
@@ -59,6 +47,7 @@ public class Crawler {
      * 遍历入口
      */
     public void crawl(){
+        NodeActionHandler nodeActioinHandler = new NodeActionHandler(driver);
         /*  ====================== 首次进入加载当前页面为第一个节点 ====================== */
         Element currentRootElement = CommonUtil.refreshPageDocument(driver);
         currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
@@ -92,13 +81,13 @@ public class Crawler {
                         PageNode sonNode = getSonNode(existPage);
                         if (sonNode == null){
                             //情况2.1.1：没有子节点，触发返回操作
-                            executeBack();
+                            nodeActioinHandler.runAction(ActionEnum.BACK,null);
                             continue;
                         }
                         //情况2.1.2：子节点遍历完成，触发返回操作
                         NodeStatus sonStatus = sonNode.getNodeStatus();
                         if (sonStatus == NodeStatus.END){
-                            executeBack();
+                            nodeActioinHandler.runAction(ActionEnum.BACK,null);
                             continue;
                         }
                         //TODO 情况2.1.3：子节点还未遍历完成，继续遍历该页面下的子节点
@@ -112,7 +101,7 @@ public class Crawler {
                         break;
                     case SKIP:
                         //情况2.3：跳过遍历，触发返回操作
-                        executeBack();
+                        nodeActioinHandler.runAction(ActionEnum.BACK,null);
                         continue;
                     default:
                         Log.logFlow("节点遍历情况类型错误");
@@ -122,13 +111,13 @@ public class Crawler {
                 PageNode newPageNode = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,currentPageNode,currentElementNode);
                 //情况1.1：当前页面深度大于配置的深度，点击返回，不创建新页面的节点（点击返回不会出现新的页面，如有则会出现问题）
                 if (newPageNode == null){
-                    executeBack();
+                    nodeActioinHandler.runAction(ActionEnum.BACK,null);
                     continue;
                 }
                 AllPageNodes.add(newPageNode);
                 //情况1.2：页面没有可执行元素，跳过遍历，不加入任务栈中，并触发返回操作
                 if (newPageNode.getNodeStatus() == NodeStatus.SKIP){
-                    executeBack();
+                    nodeActioinHandler.runAction(ActionEnum.BACK,null);
                     continue;
                 }
                 //情况1.3：页面有可执行元素，将页面对象添加到任务栈，更新成第一个出栈
@@ -145,7 +134,7 @@ public class Crawler {
             }
             //获取元素节点，并执行操作
             currentElementNode = currentElementStack.pop();
-            boolean flag = executeAction(currentElementNode);
+            boolean flag = nodeActioinHandler.runAction(currentElementNode.getAction(),currentElementNode);
             //设置元素遍历状态
             currentElementNode.setNodeStatus(flag ? NodeStatus.END : NodeStatus.FAIL);
             //重新将当前窗口页面节点更新至任务栈中判断后续操作
@@ -260,56 +249,6 @@ public class Crawler {
                 Log.logError("特殊处理操作失败!",e);
             }
         });
-    }
-
-    /**
-     * 点击返回键操作
-     */
-    public void executeBack(){
-        AndroidDriver androidDriver = (AndroidDriver) driver;
-        androidDriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
-    }
-
-    /**
-     * 执行元素操作，判断当前窗口任务处理完毕,并返回当前窗口
-     * @param elementNode   元素节点
-     */
-    public boolean executeAction(ElementNode elementNode){
-        boolean flag = false;
-        try {
-            ActionEnum actionEnum = elementNode.getAction();
-            // 统一根据xpth查找元素
-            WebElement element = driver.findElementByXPath(elementNode.getXpath());
-            //截图并异步处理高亮
-            String screenShot = CommonUtil.captureScreenShot(driver,config);
-            if (element != null){
-                new AsynTask().executeTask(screenShot,elementNode);
-            }
-            elementNode.setScreenShotPath(screenShot);
-            switch (actionEnum) {
-                case CLICK:
-                    element.click();
-                    break;
-                case INPUT:
-                    element.clear();
-                    //  随机取配置文件inputList中内容输入，无内容则默认输入"test"
-                    List<String> inputList = config.getInputTestList();
-                    if (inputList.isEmpty()){
-                        element.sendKeys("test");
-                    }else {
-                        Random random = new Random();
-                        int n = random.nextInt(inputList.size());
-                        element.sendKeys(inputList.get(n));
-                    }
-                    break;
-            }
-            flag = true;
-        }catch (NoSuchElementException e1){
-            Log.logError("节点任务 -> [info = " + elementNode.getXpath() + "], NoSuchElementException, 弹出下一个节点任务", e1);
-        }catch (Exception e){
-            Log.logError("节点任务 -> [info = " + elementNode.getXpath() + "], 发生未知异常, 弹出下一个节点任务", e);
-        }
-        return flag;
     }
 
     /**

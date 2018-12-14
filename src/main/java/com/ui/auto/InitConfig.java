@@ -24,15 +24,6 @@ public class InitConfig {
 		this.status = loadConfig();
 	}
 
-	private List<String> stringConvertList(Map map, String type) {
-		if(map.get(type) ==null){
-			return null;
-		}
-		String str = String.valueOf(map.get(type));
-		str = str.substring(1, str.length() - 1);
-		return Arrays.asList(str.split(", "));
-	}
-
 	/**
 	 * 加载配置文件
 	 */

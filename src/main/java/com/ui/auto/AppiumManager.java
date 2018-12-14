@@ -12,6 +12,9 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 
 import java.io.File;
 
+/**
+ * 启动AppiumDriver 服务管理类
+ */
 public class AppiumManager {
     private static Config config  = InitConfig.getInstance().config;
     public AppiumDriverLocalService Service;
@@ -22,7 +25,7 @@ public class AppiumManager {
      * @return
      */
     public AppiumDriver driverForAndroid(){
-        // 启动appium服务
+        // 启动Appium服务
         AppiumServiceBuilder builder =  new AppiumServiceBuilder().withAppiumJS(new File(config.getAppiumJsPath()));
         Service = builder.build();
         Service.start();
