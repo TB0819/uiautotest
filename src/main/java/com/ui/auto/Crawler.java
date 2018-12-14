@@ -47,7 +47,7 @@ public class Crawler {
      * 遍历入口
      */
     public void crawl(){
-        NodeActionHandler nodeActioinHandler = new NodeActionHandler(driver);
+        NodeActionHandler nodeActionHandler = new NodeActionHandler(driver);
         /*  ====================== 首次进入加载当前页面为第一个节点 ====================== */
         Element currentRootElement = CommonUtil.refreshPageDocument(driver);
         currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
@@ -81,13 +81,13 @@ public class Crawler {
                         PageNode sonNode = getSonNode(existPage);
                         if (sonNode == null){
                             //情况2.1.1：没有子节点，触发返回操作
-                            nodeActioinHandler.runAction(ActionEnum.BACK,null);
+                            nodeActionHandler.runAction(ActionEnum.BACK,null);
                             continue;
                         }
                         //情况2.1.2：子节点遍历完成，触发返回操作
                         NodeStatus sonStatus = sonNode.getNodeStatus();
                         if (sonStatus == NodeStatus.END){
-                            nodeActioinHandler.runAction(ActionEnum.BACK,null);
+                            nodeActionHandler.runAction(ActionEnum.BACK,null);
                             continue;
                         }
                         //TODO 情况2.1.3：子节点还未遍历完成，继续遍历该页面下的子节点
@@ -101,7 +101,7 @@ public class Crawler {
                         break;
                     case SKIP:
                         //情况2.3：跳过遍历，触发返回操作
-                        nodeActioinHandler.runAction(ActionEnum.BACK,null);
+                        nodeActionHandler.runAction(ActionEnum.BACK,null);
                         continue;
                     default:
                         Log.logFlow("节点遍历情况类型错误");
@@ -111,13 +111,13 @@ public class Crawler {
                 PageNode newPageNode = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,currentPageNode,currentElementNode);
                 //情况1.1：当前页面深度大于配置的深度，点击返回，不创建新页面的节点（点击返回不会出现新的页面，如有则会出现问题）
                 if (newPageNode == null){
-                    nodeActioinHandler.runAction(ActionEnum.BACK,null);
+                    nodeActionHandler.runAction(ActionEnum.BACK,null);
                     continue;
                 }
                 AllPageNodes.add(newPageNode);
                 //情况1.2：页面没有可执行元素，跳过遍历，不加入任务栈中，并触发返回操作
                 if (newPageNode.getNodeStatus() == NodeStatus.SKIP){
-                    nodeActioinHandler.runAction(ActionEnum.BACK,null);
+                    nodeActionHandler.runAction(ActionEnum.BACK,null);
                     continue;
                 }
                 //情况1.3：页面有可执行元素，将页面对象添加到任务栈，更新成第一个出栈
@@ -134,7 +134,7 @@ public class Crawler {
             }
             //获取元素节点，并执行操作
             currentElementNode = currentElementStack.pop();
-            boolean flag = nodeActioinHandler.runAction(currentElementNode.getAction(),currentElementNode);
+            boolean flag = nodeActionHandler.runAction(currentElementNode.getAction(),currentElementNode);
             //设置元素遍历状态
             currentElementNode.setNodeStatus(flag ? NodeStatus.END : NodeStatus.FAIL);
             //重新将当前窗口页面节点更新至任务栈中判断后续操作
