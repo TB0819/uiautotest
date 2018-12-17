@@ -20,12 +20,15 @@ public class NodeActionHandler extends NodeAction{
 
     @Override
     protected void before(ActionEnum actionEnum, ElementNode elementNode) {
-        WebElement element = driver.findElementByXPath(elementNode.getXpath());
+        Log.logStep(elementNode.getPageUrl()+" 页面的【" + elementNode.getXpath()+"】节点执行："+actionEnum.getDescription());
         String screenShot = CommonUtil.captureScreenShot(driver,config);
-        if (element != null){
-            new AsynTask().executeTask(screenShot,elementNode);
-        }
+        new AsynTask().executeTask(screenShot,elementNode);
         elementNode.setScreenShotPath(screenShot);
+    }
+
+    @Override
+    protected void triggerBefore(ActionEnum actionEnum, WebElement element, String inputText) {
+
     }
 
     @Override
@@ -34,7 +37,13 @@ public class NodeActionHandler extends NodeAction{
     }
 
     @Override
+    protected void triggerAfter(ActionEnum actionEnum, WebElement element, String inputText) {
+
+    }
+
+    @Override
     protected void afterToThrowable(ActionEnum actionEnum, ElementNode elementNode, Throwable e) {
-        Log.logError("节点任务 -> [info = " + elementNode.getXpath() + "], 执行发生错误, 继续弹出下一个节点任务!", e);
+        // TODO 未找到元素 或 出现异常截图
+        Log.logError(elementNode.getPageUrl()+" 页面的【" + elementNode.getXpath()+"】节点执行："+actionEnum.getDescription()+" 发生错误, 继续弹出下一个节点任务!", e);
     }
 }

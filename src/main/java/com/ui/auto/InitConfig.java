@@ -1,7 +1,9 @@
 package com.ui.auto;
 
+import com.ui.entity.ActionEnum;
 import com.ui.entity.ComConstant;
 import com.ui.entity.Config;
+import com.ui.entity.Trigger;
 import com.ui.util.Log;
 import org.yaml.snakeyaml.Yaml;
 
@@ -32,6 +34,7 @@ public class InitConfig {
 		Yaml yaml = new Yaml();
 		try {
 			config = yaml.loadAs(new FileInputStream(new File(ComConstant.CONFIG_PATH)), Config.class);
+			setTriggerAction(config);
 			createSnapshotPath();
 			flag = false;
 		} catch (FileNotFoundException e) {
@@ -39,6 +42,30 @@ public class InitConfig {
 			Log.logError("初始化Config配置文件失败",e);
 		}
 		return flag;
+	}
+
+	private void setAction(List<Trigger> triggerList){
+		for (Trigger trigger: triggerList){
+			switch (trigger.getAction()){
+				case "click":
+					trigger.setActionEnum(ActionEnum.CLICK);
+					break;
+				case "input":
+					trigger.setActionEnum(ActionEnum.INPUT);
+					break;
+				case "back":
+					trigger.setActionEnum(ActionEnum.BACK);
+					break;
+				default:
+					Log.logError("操作类型错误!",null);
+			}
+		}
+	}
+	private void setTriggerAction(Config config){
+		List<Trigger> startList = config.getStartPageAndroidStep();
+		List<Trigger> triggerList = config.getTriggerList();
+		setAction(startList);
+		setAction(triggerList);
 	}
 
 	/**

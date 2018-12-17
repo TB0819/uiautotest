@@ -33,11 +33,27 @@ public abstract class NodeAction {
     protected abstract void before(ActionEnum actionEnum, ElementNode elementNode);
 
     /**
+     * 执行特殊处理或进入测试步骤之前处理
+     * @param actionEnum
+     * @param element
+     * @param inputText
+     */
+    protected abstract void triggerBefore(ActionEnum actionEnum,WebElement element, String inputText);
+
+    /**
      * 元素节点操作之后处理
      * @param actionEnum    操作类型
      * @param elementNode   元素节点
      */
     protected abstract void after(ActionEnum actionEnum, ElementNode elementNode);
+
+    /**
+     * 执行特殊处理或进入测试步骤之后处理
+     * @param actionEnum
+     * @param element
+     * @param inputText
+     */
+    protected abstract void triggerAfter(ActionEnum actionEnum,WebElement element, String inputText);
 
     /**
      * 元素节点操作出现异常之后处理
@@ -54,23 +70,23 @@ public abstract class NodeAction {
      * @return
      */
     public boolean runAction(ActionEnum actionEnum, ElementNode elementNode){
-        //  执行前处理
-        this.before(actionEnum,elementNode);
-
         boolean flag = false;
         WebElement element = null;
         try {
+            if (elementNode != null){
+                element = driver.findElementByXPath(elementNode.getXpath());
+                //  执行前处理
+                this.before(actionEnum,elementNode);
+            }
             switch (actionEnum){
                 case BACK:
                     AndroidDriver androidDriver = (AndroidDriver) driver;
                     androidDriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
                     break;
                 case CLICK:
-                    element = driver.findElementByXPath(elementNode.getXpath());
                     element.click();
                     break;
                 case INPUT:
-                    element = driver.findElementByXPath(elementNode.getXpath());
                     element.clear();
                     String inputText = getInputText();
                     element.sendKeys(inputText);
@@ -86,6 +102,29 @@ public abstract class NodeAction {
         //  执行后处理
         this.after(actionEnum,elementNode);
         return flag;
+    }
+
+    /**
+     * 执行特殊处理或进入测试步骤
+     * @param actionEnum
+     * @param element
+     * @param inputText
+     */
+    public void runTriggerAction(ActionEnum actionEnum,WebElement element, String inputText){
+        switch (actionEnum){
+            case BACK:
+                AndroidDriver androidDriver = (AndroidDriver) driver;
+                androidDriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
+                break;
+            case CLICK:
+                element.click();
+                break;
+            case INPUT:
+                element.clear();
+                element.sendKeys(inputText);
+                break;
+            default: break;
+        }
     }
 
     /**

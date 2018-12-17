@@ -60,6 +60,7 @@ public class CommonUtil {
      * @throws DocumentException
      */
     public static Element getElementByXpath(String xml,String xPath) throws DocumentException {
+        CommonUtil.waitSleep(2);
         Document document = DocumentHelper.parseText(xml);
         Element rootElement = document.getRootElement();
         Element singleNode = (Element) rootElement.selectSingleNode(xPath);
@@ -125,7 +126,7 @@ public class CommonUtil {
         String capturedScreen;
         String screenPath = config.getScreenshotPath();
         if (!screenPath.isEmpty() && screenPath != null){
-            capturedScreen = screenPath + ComConstant.DEFAULT_SCREENSHOT_ANDROID_PATH + getCurrentTime()+ ".png";
+            capturedScreen = screenPath + ComConstant.DEFAULT_SCREENSHOT_ANDROID_PATH + "/"+ getCurrentTime()+ ".png";
         }else {
             capturedScreen = ComConstant.DEFAULT_SCREENSHOT_PATH + ComConstant.DEFAULT_SCREENSHOT_ANDROID_PATH + getCurrentTime()+ ".png";
         }

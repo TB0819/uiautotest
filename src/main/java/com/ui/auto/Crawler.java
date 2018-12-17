@@ -46,14 +46,11 @@ public class Crawler {
      * 遍历入口
      */
     public void crawl(){
+        int num = 0;
         NodeActionHandler nodeActionHandler = new NodeActionHandler(driver);
-        /*  ====================== 首次进入加载当前页面为第一个节点 ====================== */
-        Element currentRootElement = CommonUtil.refreshPageDocument(driver);
-        currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
-        PageNode firstPageNode = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,null,null);
-        taskPageStack.push(firstPageNode);
 
         while(!taskPageStack.isEmpty()){
+            num++;
             //TODO 判断是否退出循环
             if (isExit()){ return; }
 
@@ -63,14 +60,15 @@ public class Crawler {
             */
             execTrigger();
             /* ====================== 页面遍历 ====================== */
-            currentRootElement = CommonUtil.refreshPageDocument(driver);
+            Element currentRootElement = CommonUtil.refreshPageDocument(driver);
             currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
             PageNode existPage = getExistPageForAllPageNodes(currentPageUrl);
             if(existPage != null){
                 // TODO 判断页面结果是否发生变化,目前很慢，后续优化
-                PageNode newPage = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,currentPageNode,currentElementNode);
-                refreshStructure(newPage,existPage);
-
+                if (num != 1){
+                    PageNode newPage = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,currentPageNode,currentElementNode);
+                    refreshStructure(newPage,existPage);
+                }
                 NodeStatus status = existPage.getNodeStatus();
                 //情况2：存在访问过页面，判断是否遍历完成
                 switch (status){
@@ -167,11 +165,11 @@ public class Crawler {
         oldPageAllNode.addAll(existPage.getAllElementNodes());
         int nodeLength = newPageAllNode.size();
         for (int i = 0; i < nodeLength; i++){
-            for (ElementNode existElementNode : oldPageAllNode){
-                if (newPageAllNode.get(i).getXpath().equals(existElementNode.getXpath())){
+            for (int j = 0; j< oldPageAllNode.size(); j++){
+                if (newPageAllNode.get(i).getXpath().equals(oldPageAllNode.get(j).getXpath())){
                     break;
                 }
-                if ( i >=(nodeLength-1) && !newPageAllNode.get(i).getXpath().equals(existElementNode.getXpath())){
+                if ( j >=(oldPageAllNode.size()-1) && !newPageAllNode.get(i).getXpath().equals(oldPageAllNode.get(j).getXpath())){
                     existPage.getStackElementNodes().push(newPageAllNode.get(i));
                     existPage.getAllElementNodes().add(newPageAllNode.get(i));
                 }
@@ -211,21 +209,20 @@ public class Crawler {
      * 初始化进入遍历步骤
      */
     public void initStartPage(){
+        /*  ====================== 执行进入被测首页面 ====================== */
         List<Trigger> triggers = config.getStartPageAndroidStep();
         triggers.stream().forEach(p -> {
             WebElement element = driver.findElementByXPath(p.getXpath());
-            switch (p.getAction()){
-                case "click":
-                    element.click();
-                    break;
-                case "input":
-                    element.clear();
-                    element.sendKeys(p.getValue());
-                    break;
-                default:
-                    Log.logError("操作类型错误!",null);
-            }
+            new NodeActionHandler(driver).runTriggerAction(p.getActionEnum(),element,null);
         });
+        /*  ====================== 首次进入加载当前页面为第一个节点 ====================== */
+        Element currentRootElement = CommonUtil.refreshPageDocument(driver);
+        this.currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
+        PageNode firstPageNode = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,null,null);
+        this.taskPageStack.push(firstPageNode);
+        this.allPageNodes.add(firstPageNode);
+        this.allPageNodeMaps.put(currentPageUrl,firstPageNode);
+        this.currentPageNode = firstPageNode;
     }
 
     /**
@@ -237,13 +234,13 @@ public class Crawler {
             return;
         }
         String pageSource = driver.getPageSource();
-        CommonUtil.waitSleep(2);
         triggers.stream().forEach(p ->{
             try {
                 Element element = CommonUtil.getElementByXpath(pageSource,p.getXpath());
                 if (element != null){
                     Log.logInfo("触发器预处理——>" + p.getXpath());
-                    driver.findElementByXPath(p.getXpath()).click();
+                    WebElement webElement = driver.findElementByXPath(p.getXpath());
+                    new NodeActionHandler(driver).runTriggerAction(p.getActionEnum(),webElement,null);
                 }
             } catch (DocumentException e) {
                 Log.logError("特殊处理操作失败!",e);

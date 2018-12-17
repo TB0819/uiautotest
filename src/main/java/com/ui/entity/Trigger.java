@@ -10,6 +10,15 @@ public class Trigger {
     private String xpath;
     private String page;
     private String value;
+    private ActionEnum actionEnum;
+
+    public ActionEnum getActionEnum() {
+        return actionEnum;
+    }
+
+    public void setActionEnum(ActionEnum actionEnum) {
+        this.actionEnum = actionEnum;
+    }
 
     public String getAction() {
         return action;
