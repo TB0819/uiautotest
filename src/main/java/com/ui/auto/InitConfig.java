@@ -10,9 +10,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 初始化配置类
@@ -21,7 +19,6 @@ import java.util.Map;
 public class InitConfig {
 	public Config config;
 	private boolean status;
-
 	private InitConfig() {
 		this.status = loadConfig();
 	}
@@ -30,16 +27,22 @@ public class InitConfig {
 	 * 加载配置文件
 	 */
 	public boolean loadConfig(){
+		ExtentReportManager.getInstance();
 		boolean flag = false;
 		Yaml yaml = new Yaml();
 		try {
-			config = yaml.loadAs(new FileInputStream(new File(ComConstant.CONFIG_PATH)), Config.class);
+			ExtentReportManager.createSuccessLog("开始加载配置文件");
+			File ymlFile = new File(ComConstant.CONFIG_PATH);
+			config = yaml.loadAs(new FileInputStream(ymlFile), Config.class);
+			ExtentReportManager.createSuccessLog("YML配置加载成功，路径："+ymlFile.getAbsolutePath());
 			setTriggerAction(config);
 			createSnapshotPath();
 			flag = false;
 		} catch (FileNotFoundException e) {
 			flag = true;
-			Log.logError("初始化Config配置文件失败",e);
+			ExtentReportManager.createFailLog("初始化配置文件失败",e);
+		}finally {
+			ExtentReportManager.getExtentReports().flush();
 		}
 		return flag;
 	}
@@ -79,6 +82,7 @@ public class InitConfig {
 	 * 创建系统截图目录(Android或者IOS)
 	 */
 	private void createSnapshotPath(){
+		ExtentReportManager.createSuccessLog("开始创建截图目录");
 		String screenshot_path = config.getScreenshotPath();
 		File file2, file;
 		if (screenshot_path.isEmpty() || screenshot_path == null){
@@ -95,11 +99,12 @@ public class InitConfig {
 		// 创建子目录
 		if (!file.exists()) {
 			if (file.mkdir()) {
-				Log.logInfo("Android Directory is created!");
+				ExtentReportManager.createSuccessLog("截图目录创建成功，路径："+file.getAbsolutePath());
 			} else {
-				Log.logInfo("Failed to create directory!");
+				ExtentReportManager.createFailLog("截图目录创建成功，路径："+file.getAbsolutePath(),null);
 			}
 		}
+		ExtentReportManager.createSuccessLog("截图目录已存在，路径："+file.getAbsolutePath());
 	}
 
 	public static InitConfig getInstance() {

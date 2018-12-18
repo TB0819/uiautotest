@@ -70,8 +70,17 @@
             <artifactId>swingx</artifactId>
             <version>1.6.1</version>
         </dependency>
-        <!--高亮图片-->
-
+        <!--extentReports报告-->
+        <dependency>
+            <groupId>com.aventstack</groupId>
+            <artifactId>extentreports</artifactId>
+            <version>4.0.6</version>
+        </dependency>
+        <dependency>
+            <groupId>xml-apis</groupId>
+            <artifactId>xml-apis</artifactId>
+            <version>1.4.01</version>
+        </dependency>
         <!-- appium -->
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>

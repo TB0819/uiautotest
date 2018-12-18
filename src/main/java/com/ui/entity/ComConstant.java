@@ -26,4 +26,5 @@ public class ComConstant {
     public static final String DEFAULT_SCREENSHOT_PATH = System.getProperty("user.dir") + "/target/screenshot";
     public static final String DEFAULT_SCREENSHOT_ANDROID_PATH = "/android";
     public static final String DEFAULT_SCREENSHOT_IOS_PATH = "/ios";
+    public static final String REPORT_PATH = "test-output/extent.html";
 }

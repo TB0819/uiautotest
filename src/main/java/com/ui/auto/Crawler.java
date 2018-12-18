@@ -210,12 +210,14 @@ public class Crawler {
      */
     public void initStartPage(){
         /*  ====================== 执行进入被测首页面 ====================== */
+        ExtentReportManager.createSuccessLog("开始进入被测页面");
         List<Trigger> triggers = config.getStartPageAndroidStep();
         triggers.stream().forEach(p -> {
             WebElement element = driver.findElementByXPath(p.getXpath());
             new NodeActionHandler(driver).runTriggerAction(p.getActionEnum(),element,null);
         });
         /*  ====================== 首次进入加载当前页面为第一个节点 ====================== */
+        ExtentReportManager.createSuccessLog("加载首页面为第一个节点");
         Element currentRootElement = CommonUtil.refreshPageDocument(driver);
         this.currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
         PageNode firstPageNode = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,null,null);

@@ -3,7 +3,6 @@ package com.ui.auto;
 import com.ui.entity.ActionEnum;
 import com.ui.entity.ElementNode;
 import com.ui.util.CommonUtil;
-import com.ui.util.Log;
 import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.WebElement;
 
@@ -20,15 +19,15 @@ public class NodeActionHandler extends NodeAction{
 
     @Override
     protected void before(ActionEnum actionEnum, ElementNode elementNode) {
-        Log.logStep(elementNode.getPageUrl()+" 页面的【" + elementNode.getXpath()+"】节点执行："+actionEnum.getDescription());
         String screenShot = CommonUtil.captureScreenShot(driver,config);
+        ExtentReportManager.createScreenShotLog(elementNode.getPageUrl()+" 页面的【" + elementNode.getXpath()+"】节点执行："+actionEnum.getDescription(),screenShot);
         new AsynTask().executeTask(screenShot,elementNode);
         elementNode.setScreenShotPath(screenShot);
     }
 
     @Override
     protected void triggerBefore(ActionEnum actionEnum, WebElement element, String inputText) {
-
+        ExtentReportManager.createSuccessLog("特殊处理【" + element.getAttribute("xpath")+"】节点执行："+actionEnum.getDescription());
     }
 
     @Override
@@ -44,6 +43,6 @@ public class NodeActionHandler extends NodeAction{
     @Override
     protected void afterToThrowable(ActionEnum actionEnum, ElementNode elementNode, Throwable e) {
         // TODO 未找到元素 或 出现异常截图
-        Log.logError(elementNode.getPageUrl()+" 页面的【" + elementNode.getXpath()+"】节点执行："+actionEnum.getDescription()+" 发生错误, 继续弹出下一个节点任务!", e);
+        ExtentReportManager.createFailLog(elementNode.getPageUrl()+" 页面的【" + elementNode.getXpath()+"】节点执行："+actionEnum.getDescription()+" 发生错误, 继续弹出下一个节点任务!",e);
     }
 }
