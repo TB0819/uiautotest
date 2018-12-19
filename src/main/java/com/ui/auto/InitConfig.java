@@ -41,8 +41,6 @@ public class InitConfig {
 		} catch (FileNotFoundException e) {
 			flag = true;
 			ExtentReportManager.createFailLog("初始化配置文件失败",e);
-		}finally {
-			ExtentReportManager.getExtentReports().flush();
 		}
 		return flag;
 	}

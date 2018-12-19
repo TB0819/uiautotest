@@ -16,6 +16,7 @@ public class StartMain {
         // 初始化配置文件,加载失败则终止运行
         InitConfig initConfig = InitConfig.getInstance();
         if (initConfig.getInitStatus()){
+            ExtentReportManager.getExtentReports().flush();
             System.exit(0);
         }
         // 启动服务

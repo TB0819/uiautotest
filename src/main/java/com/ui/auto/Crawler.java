@@ -36,10 +36,12 @@ public class Crawler {
     private Stack<ElementNode> currentElementStack;
     private Config config  = InitConfig.getInstance().config;
     private AppiumDriver<WebElement> driver;
+    private NodeActionHandler nodeActionHandler;
     MindUtil mindUtil = MindUtil.getInstance();
 
     public Crawler(AppiumDriver<WebElement> driver) {
         this.driver = driver;
+        nodeActionHandler = new NodeActionHandler(driver);
     }
 
     /**
@@ -47,12 +49,18 @@ public class Crawler {
      */
     public void crawl(){
         int num = 0;
-        NodeActionHandler nodeActionHandler = new NodeActionHandler(driver);
 
         while(!taskPageStack.isEmpty()){
             num++;
             //TODO 判断是否退出循环
-            if (isExit()){ return; }
+            if (num>30){
+                ExtentReportManager.getExtentReports().flush();
+                return;
+            }
+            if (isExit()){
+                ExtentReportManager.getExtentReports().flush();
+                return;
+            }
 
             /*
              *  特殊处理
@@ -65,10 +73,10 @@ public class Crawler {
             PageNode existPage = getExistPageForAllPageNodes(currentPageUrl);
             if(existPage != null){
                 // TODO 判断页面结果是否发生变化,目前很慢，后续优化
-                if (num != 1){
-                    PageNode newPage = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,currentPageNode,currentElementNode);
-                    refreshStructure(newPage,existPage);
-                }
+//                if (num != 1){
+//                    PageNode newPage = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,currentPageNode,currentElementNode);
+//                    refreshStructure(newPage,existPage);
+//                }
                 NodeStatus status = existPage.getNodeStatus();
                 //情况2：存在访问过页面，判断是否遍历完成
                 switch (status){
@@ -214,7 +222,7 @@ public class Crawler {
         List<Trigger> triggers = config.getStartPageAndroidStep();
         triggers.stream().forEach(p -> {
             WebElement element = driver.findElementByXPath(p.getXpath());
-            new NodeActionHandler(driver).runTriggerAction(p.getActionEnum(),element,null);
+            nodeActionHandler.runTriggerAction(p.getActionEnum(),element,null);
         });
         /*  ====================== 首次进入加载当前页面为第一个节点 ====================== */
         ExtentReportManager.createSuccessLog("加载首页面为第一个节点");
@@ -242,7 +250,7 @@ public class Crawler {
                 if (element != null){
                     Log.logInfo("触发器预处理——>" + p.getXpath());
                     WebElement webElement = driver.findElementByXPath(p.getXpath());
-                    new NodeActionHandler(driver).runTriggerAction(p.getActionEnum(),webElement,null);
+                    nodeActionHandler.runTriggerAction(p.getActionEnum(),webElement,null);
                 }
             } catch (DocumentException e) {
                 Log.logError("特殊处理操作失败!",e);
