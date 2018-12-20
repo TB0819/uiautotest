@@ -20,14 +20,15 @@ public class NodeActionHandler extends NodeAction{
     @Override
     protected void before(ActionEnum actionEnum, ElementNode elementNode) {
         String screenShot = CommonUtil.captureScreenShot(driver,config);
-        ExtentReportManager.createScreenShotLog(elementNode.getPageUrl()+" 页面的【" + elementNode.getXpath()+"】节点执行："+actionEnum.getDescription(),screenShot);
+        String text = "".equals(elementNode.getName()) ? elementNode.getXpath():elementNode.getName();
+        ExtentReportManager.createSuccessLog(elementNode.getPageUrl(),text,actionEnum.getDescription(),screenShot);
         new AsynTask().executeTask(screenShot,elementNode);
         elementNode.setScreenShotPath(screenShot);
     }
 
     @Override
     protected void triggerBefore(ActionEnum actionEnum, WebElement element, String inputText) {
-        ExtentReportManager.createSuccessLog("特殊处理【" + element.getAttribute("xpath")+"】节点执行："+actionEnum.getDescription());
+        ExtentReportManager.createSuccessLog("特殊处理",element.getAttribute("xpath"),actionEnum.getDescription());
     }
 
     @Override
@@ -43,6 +44,7 @@ public class NodeActionHandler extends NodeAction{
     @Override
     protected void afterToThrowable(ActionEnum actionEnum, ElementNode elementNode, Throwable e) {
         // TODO 未找到元素 或 出现异常截图
-        ExtentReportManager.createFailLog(elementNode.getPageUrl()+" 页面的【" + elementNode.getXpath()+"】节点执行："+actionEnum.getDescription()+" 发生错误, 继续弹出下一个节点任务!",e);
+        String text = "".equals(elementNode.getName()) ? elementNode.getXpath():elementNode.getName();
+        ExtentReportManager.createFailLog(elementNode.getPageUrl(), text,actionEnum.getDescription(),e);
     }
 }

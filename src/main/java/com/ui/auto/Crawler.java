@@ -48,17 +48,10 @@ public class Crawler {
      * 遍历入口
      */
     public void crawl(){
-        int num = 0;
-
         while(!taskPageStack.isEmpty()){
-            num++;
             //TODO 判断是否退出循环
-            if (num>30){
-                ExtentReportManager.getExtentReports().flush();
-                return;
-            }
             if (isExit()){
-                ExtentReportManager.getExtentReports().flush();
+                CommonUtil.exitCrawler(driver);
                 return;
             }
 
