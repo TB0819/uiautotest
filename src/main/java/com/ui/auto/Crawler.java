@@ -241,7 +241,6 @@ public class Crawler {
             try {
                 Element element = CommonUtil.getElementByXpath(pageSource,p.getXpath());
                 if (element != null){
-                    Log.logInfo("触发器预处理——>" + p.getXpath());
                     WebElement webElement = driver.findElementByXPath(p.getXpath());
                     nodeActionHandler.runTriggerAction(p.getActionEnum(),webElement,null);
                 }
