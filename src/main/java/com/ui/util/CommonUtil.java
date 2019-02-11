@@ -28,13 +28,18 @@ public class CommonUtil {
     private static final String DataFormat = "yyyy-MM-dd_HH_mm_ss";
     private static Config config  = InitConfig.getInstance().config;
 
+
     /**
-     * 关闭appium服务以及关闭报告
+     * 关闭appium服务、报告、xmind
      * @param driver
      */
     public static void exitCrawler(AppiumDriver driver){
-        ExtentReportManager.getExtentReports().flush();
-        driver.quit();
+        try {
+            driver.quit();    
+        }finally {
+            ExtentReportManager.getExtentReports().flush();
+            XmindUtil.getInstance().saveWorkBook();
+        }
     }
 
     /**

@@ -36,6 +36,7 @@ public class Config {
     private List<Trigger> triggerList;
     private List<Trigger> startPageAndroidStep;
     private String screenshotPath;
+    private String xmindPath;
     private List<String> pressBackPackageList;
     private List<String> androidValidPackageList;
     private List<String> iosValidPackageList;
@@ -51,6 +52,14 @@ public class Config {
     private String deviceName;
     private int deviceHeight;
     private int deviceWidth;
+
+    public String getXmindPath() {
+        return xmindPath;
+    }
+
+    public void setXmindPath(String xmindPath) {
+        this.xmindPath = xmindPath;
+    }
 
     public List<Trigger> getStartPageAndroidStep() {
         return startPageAndroidStep;

@@ -5,6 +5,8 @@ import com.ui.entity.ComConstant;
 import com.ui.entity.Config;
 import com.ui.entity.Trigger;
 import com.ui.util.Log;
+import io.appium.java_client.AppiumDriver;
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -14,35 +16,44 @@ import java.util.List;
 
 /**
  * 初始化配置类
+ * 	1、创建报告对象
+ * 	2、加载yml配置文件
+ * 	3、创建截图路径
+ * 	4、创建appium服务
  * @author  cz
  */
 public class InitConfig {
 	public Config config;
 	private boolean status;
+	private AppiumDriver driver;
+
 	private InitConfig() {
-		this.status = loadConfig();
+		ExtentReportManager.getInstance();
+		try {
+			loadYml();
+			createSnapshotPath();
+			AppiumManager manager =  new AppiumManager();
+			this.driver = manager.driverForAndroid();
+			this.status = false;
+		}catch (FileNotFoundException e) {
+			this.status = true;
+			ExtentReportManager.createFailLog("初始化配置文件失败",e);
+		}catch (Exception e){
+			this.status = true;
+			ExtentReportManager.createFailLog("初始化配置失败",e);
+		}
 	}
 
 	/**
 	 * 加载配置文件
 	 */
-	public boolean loadConfig(){
-		ExtentReportManager.getInstance();
-		boolean flag = false;
+	public void loadYml() throws FileNotFoundException {
+		ExtentReportManager.createSuccessLog("开始加载配置文件");
 		Yaml yaml = new Yaml();
-		try {
-			ExtentReportManager.createSuccessLog("开始加载配置文件");
-			File ymlFile = new File(ComConstant.CONFIG_PATH);
-			config = yaml.loadAs(new FileInputStream(ymlFile), Config.class);
-			ExtentReportManager.createSuccessLog("YML配置加载成功，路径："+ymlFile.getAbsolutePath());
-			setTriggerAction(config);
-			createSnapshotPath();
-			flag = false;
-		} catch (FileNotFoundException e) {
-			flag = true;
-			ExtentReportManager.createFailLog("初始化配置文件失败",e);
-		}
-		return flag;
+		File ymlFile = new File(ComConstant.CONFIG_PATH);
+		config = yaml.loadAs(new FileInputStream(ymlFile), Config.class);
+		ExtentReportManager.createSuccessLog("YML配置加载成功，路径："+ymlFile.getAbsolutePath());
+		setTriggerAction(config);
 	}
 
 	private void setAction(List<Trigger> triggerList){
@@ -70,11 +81,15 @@ public class InitConfig {
 	}
 
 	/**
-	 * 获取加载配置文件状态
+	 * 获取加载配置状态
 	 * @return
 	 */
 	public boolean getInitStatus(){
 		return status;
+	}
+
+	public AppiumDriver getDriver(){
+		return driver;
 	}
 	/**
 	 * 创建系统截图目录(Android或者IOS)
@@ -83,7 +98,8 @@ public class InitConfig {
 		ExtentReportManager.createSuccessLog("开始创建截图目录");
 		String screenshot_path = config.getScreenshotPath();
 		File file2, file;
-		if (screenshot_path.isEmpty() || screenshot_path == null){
+
+		if (StringUtils.isBlank(screenshot_path)){
 			file2 = new File(ComConstant.DEFAULT_SCREENSHOT_PATH);
 			file = new File(ComConstant.DEFAULT_SCREENSHOT_PATH + ComConstant.DEFAULT_SCREENSHOT_ANDROID_PATH);
 		}else {

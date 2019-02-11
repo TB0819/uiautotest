@@ -10,38 +10,34 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 /**
  * Created by Administrator on 2018-07-24.
  * 异步处理截图圈中操作元素
  */
 public class AsynTask {
-    private ExecutorService executorService = Executors.newFixedThreadPool(2);
 
     /**
      * 异步执行任务
      * @param picturePath
      * @param elementNode
      */
-    public void executeTask(String picturePath, ElementNode elementNode){
-        executorService.submit(new Callable<Object>() {
+    public Future<Boolean> executeTask(String picturePath, ElementNode elementNode){
+        CompletableFuture<Boolean> future = new CompletableFuture<>();
+        new Thread(()->{
+            boolean flag = false;
+            try {
+                highlight(picturePath,elementNode);
+                flag =true;
+            }catch (Exception e){
+                Log.logError("截图圈中失败", e);
+            }
+            future.complete(flag);
+        }).start();
 
-                   @Override
-                   public Object call() throws Exception {
-                       boolean flag = false;
-                       try {
-                           highlight(picturePath,elementNode);
-                           flag =true;
-                       }catch (Exception e){
-
-                       }
-                       return flag;
-                   }
-               }
-        );
+        //无需等待还没结束的计算,直接返回Future对象
+        return future;
     }
 
     /**

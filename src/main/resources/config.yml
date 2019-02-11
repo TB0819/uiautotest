@@ -5,16 +5,18 @@ appActivity: ".ui.AppSplash"
 appPackage: "zmsoft.rest.supply"
 udid: "3DN4C16919001533"
 deviceName: "华为G9"
+#########  基础设置 #########
+# 截图路径
+screenshotPath: "c:\\appuitest"
+# 轨迹图路径
+xmindPath: "c:\\appuitest"
+#########  遍历设置 #########
 # 页面URL
 pageUrl: ""
-# 截图路径
-screenshotPath: "D:\\appuitest"
 #遍历深度
 maxDepth:  5
-
 #等待时间(单位：秒)
 waitSec: 3
-
 #待输入的文本
 inputTestList:
   - "123"

@@ -30,6 +30,15 @@ public class ElementNode {
     private ActionEnum action;
     private String crawlerLoc;
     private String screenShotPath;
+    private String xmindTopicId;
+
+    public String getXmindTopicId() {
+        return xmindTopicId;
+    }
+
+    public void setXmindTopicId(String xmindTopicId) {
+        this.xmindTopicId = xmindTopicId;
+    }
 
     public String getScreenShotPath() {
         return screenShotPath;

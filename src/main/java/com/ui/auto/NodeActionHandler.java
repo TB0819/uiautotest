@@ -19,11 +19,13 @@ public class NodeActionHandler extends NodeAction{
 
     @Override
     protected void before(ActionEnum actionEnum, ElementNode elementNode) {
+        //  截图
         String screenShot = CommonUtil.captureScreenShot(driver,config);
+        elementNode.setScreenShotPath(screenShot);
         String text = "".equals(elementNode.getName()) ? elementNode.getXpath():elementNode.getName();
+        //  截图报告
         ExtentReportManager.createSuccessLog(elementNode.getPageUrl(),text,actionEnum.getDescription(),screenShot);
         new AsynTask().executeTask(screenShot,elementNode);
-        elementNode.setScreenShotPath(screenShot);
     }
 
     @Override
@@ -43,7 +45,6 @@ public class NodeActionHandler extends NodeAction{
 
     @Override
     protected void afterToThrowable(ActionEnum actionEnum, ElementNode elementNode, Throwable e) {
-        // TODO 未找到元素 或 出现异常截图
         String text = "".equals(elementNode.getName()) ? elementNode.getXpath():elementNode.getName();
         ExtentReportManager.createFailLog(elementNode.getPageUrl(), text,actionEnum.getDescription(),e);
     }

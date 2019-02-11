@@ -11,7 +11,6 @@ import com.ui.entity.ActionEnum;
 import com.ui.entity.NodeStatus;
 import com.ui.util.CommonUtil;
 import io.appium.java_client.AppiumDriver;
-import io.appium.java_client.android.AndroidDriver;
 import org.dom4j.Element;
 import org.openqa.selenium.WebElement;
 

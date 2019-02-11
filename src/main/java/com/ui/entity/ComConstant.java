@@ -27,4 +27,10 @@ public class ComConstant {
     public static final String DEFAULT_SCREENSHOT_ANDROID_PATH = "/android";
     public static final String DEFAULT_SCREENSHOT_IOS_PATH = "/ios";
     public static final String REPORT_PATH = "test-output/extent.html";
+
+    /*============================================= xmind =============================================*/
+    public static final String XMIND_PATH = System.getProperty("user.dir") + "/src/main/resources/UIAutoResult.xmind";
+    public static final String XMIND_SUCCESS = "symbol-right";
+    public static final String XMIND_FAIL = "symbol-wrong";
+
 }

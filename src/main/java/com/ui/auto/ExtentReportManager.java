@@ -33,6 +33,7 @@ public class ExtentReportManager {
     public static void createSuccessLog(String message){
         parentsNode.log(Status.PASS,message);
     }
+
     public static void createSuccessLog(String pageName,String elementText, String action ,String screenPath){
         try {
             parentsNode.log(Status.PASS,"页面："+pageName +"<br> 元素：" + elementText +"<br> 动作："+action, MediaEntityBuilder.createScreenCaptureFromPath(screenPath).build());

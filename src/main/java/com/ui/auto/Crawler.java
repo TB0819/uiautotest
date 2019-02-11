@@ -5,7 +5,7 @@ import com.ui.entity.ActionEnum;
 import com.ui.entity.NodeStatus;
 import com.ui.util.CommonUtil;
 import com.ui.util.Log;
-import com.ui.util.MindUtil;
+import com.ui.util.XmindUtil;
 import io.appium.java_client.AppiumDriver;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -30,16 +30,12 @@ public class Crawler {
     //页面任务栈
     private Stack<PageNode> taskPageStack = new Stack<PageNode>();
     //访问过的页面集合
-    private List<PageNode>  allPageNodes = new ArrayList<PageNode>();
     private Map<String,PageNode> allPageNodeMaps = new HashMap<String,PageNode>();
-    //当前页面元素任务栈
-    private Stack<ElementNode> currentElementStack;
     private Config config  = InitConfig.getInstance().config;
-    private AppiumDriver<WebElement> driver;
+    private AppiumDriver driver;
     private NodeActionHandler nodeActionHandler;
-    MindUtil mindUtil = MindUtil.getInstance();
 
-    public Crawler(AppiumDriver<WebElement> driver) {
+    public Crawler(AppiumDriver driver) {
         this.driver = driver;
         nodeActionHandler = new NodeActionHandler(driver);
     }
@@ -49,7 +45,6 @@ public class Crawler {
      */
     public void crawl(){
         while(!taskPageStack.isEmpty()){
-            //TODO 判断是否退出循环
             if (isExit()){
                 CommonUtil.exitCrawler(driver);
                 return;
@@ -63,7 +58,7 @@ public class Crawler {
             /* ====================== 页面遍历 ====================== */
             Element currentRootElement = CommonUtil.refreshPageDocument(driver);
             currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
-            PageNode existPage = getExistPageForAllPageNodes(currentPageUrl);
+            PageNode existPage = allPageNodeMaps.get(currentPageUrl);
             if(existPage != null){
                 // TODO 判断页面结果是否发生变化,目前很慢，后续优化
 //                if (num != 1){
@@ -112,7 +107,6 @@ public class Crawler {
                     nodeActionHandler.runAction(ActionEnum.BACK,null);
                     continue;
                 }
-                allPageNodes.add(newPageNode);
                 allPageNodeMaps.put(newPageNode.getUrl(),newPageNode);
                 //情况1.2：页面没有可执行元素，跳过遍历，不加入任务栈中，并触发返回操作
                 if (newPageNode.getNodeStatus() == NodeStatus.SKIP){
@@ -125,7 +119,7 @@ public class Crawler {
 
             /* ====================== 执行页面元素节点操作 ====================== */
             currentPageNode = taskPageStack.pop();
-            currentElementStack = currentPageNode.getStackElementNodes();
+            Stack<ElementNode> currentElementStack = currentPageNode.getStackElementNodes();
             if (currentElementStack.isEmpty()){
                 //页面没有可执行元素，更新页面节点遍历状态
                 currentPageNode.setNodeStatus(NodeStatus.END);
@@ -193,20 +187,6 @@ public class Crawler {
     }
 
     /**
-     * 获取当前窗口在历史集合中的信息
-     * @param pageUrl   当前页面URL
-     * @return
-     */
-    private PageNode getExistPageForAllPageNodes(String pageUrl){
-        for (PageNode pageNode: allPageNodes){
-            if (pageNode.getUrl().equals(pageUrl)){
-                return pageNode;
-            }
-        }
-        return null;
-    }
-
-    /**
      * 初始化进入遍历步骤
      */
     public void initStartPage(){
@@ -223,9 +203,10 @@ public class Crawler {
         this.currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
         PageNode firstPageNode = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,null,null);
         this.taskPageStack.push(firstPageNode);
-        this.allPageNodes.add(firstPageNode);
         this.allPageNodeMaps.put(currentPageUrl,firstPageNode);
         this.currentPageNode = firstPageNode;
+        XmindUtil.getInstance().createWorkBook(firstPageNode.getUrl());
+        ExtentReportManager.createSuccessLog("开始遍历");
     }
 
     /**
@@ -286,20 +267,5 @@ public class Crawler {
             Log.logError("获取当前APP包名失败",e);
         }
         return name;
-    }
-
-    public void drawXmind(){
-        allPageNodes.stream().filter(p -> p.getDepth() == 1).forEach(p -> createXmindNode(p));
-        mindUtil.closeMind();
-    }
-
-    public void createXmindNode(PageNode node){
-        for (ElementNode elementNode : node.getAllElementNodes()){
-            if (elementNode.getNodeStatus() == NodeStatus.FAIL)    {
-                mindUtil.createFailNode("//*[@TEXT='Start']",elementNode.getPageUrl()+"_"+elementNode.getXpath());
-            }else {
-                mindUtil.createSuccessNode("//*[@TEXT='Start']",elementNode.getPageUrl()+"_"+elementNode.getXpath());
-            }
-        }
     }
 }
