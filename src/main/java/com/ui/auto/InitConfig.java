@@ -32,7 +32,7 @@ public class InitConfig {
 		try {
 			loadYml();
 			createSnapshotPath();
-			AppiumManager manager =  new AppiumManager();
+			AppiumManager manager =  new AppiumManager(this.config);
 			this.driver = manager.driverForAndroid();
 			this.status = false;
 		}catch (FileNotFoundException e) {

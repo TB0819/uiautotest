@@ -30,7 +30,7 @@ public class Crawler {
     //页面任务栈
     private Stack<PageNode> taskPageStack = new Stack<PageNode>();
     //访问过的页面集合
-    private Map<String,PageNode> allPageNodeMaps = new HashMap<String,PageNode>();
+    public static Map<String,PageNode> allPageNodeMaps = new HashMap<String,PageNode>();
     private Config config  = InitConfig.getInstance().config;
     private AppiumDriver driver;
     private NodeActionHandler nodeActionHandler;
@@ -44,8 +44,11 @@ public class Crawler {
      * 遍历入口
      */
     public void crawl(){
+        long startTime = System.currentTimeMillis();
         while(!taskPageStack.isEmpty()){
-            if (isExit()){
+            long endTime = System.currentTimeMillis();
+            long time = endTime - startTime;
+            if (isExit() || time>300000){
                 CommonUtil.exitCrawler(driver);
                 return;
             }

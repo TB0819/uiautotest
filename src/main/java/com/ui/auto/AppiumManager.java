@@ -2,6 +2,7 @@ package com.ui.auto;
 
 import com.ui.entity.Config;
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.remote.AndroidMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
@@ -14,9 +15,13 @@ import java.io.File;
  * 启动AppiumDriver 服务管理类
  */
 public class AppiumManager {
-    private Config config = InitConfig.getInstance().config;
+    private Config config;
     private AppiumDriverLocalService Service;
     private AppiumDriver driver;
+
+    public AppiumManager(Config config){
+        this.config = config;
+    }
 
     /**
      * 启动android服务
@@ -38,7 +43,7 @@ public class AppiumManager {
         androidCapabilities.setCapability(AndroidMobileCapabilityType.RESET_KEYBOARD, true);
         androidCapabilities.setCapability(MobileCapabilityType.NO_RESET, true);
         androidCapabilities.setCapability(MobileCapabilityType.UDID, config.getUdid());
-        driver = new AppiumDriver(Service.getUrl(), androidCapabilities);
+        driver = new AndroidDriver(Service.getUrl(), androidCapabilities);
         return driver;
     }
 
