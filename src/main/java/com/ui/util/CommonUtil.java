@@ -33,13 +33,12 @@ public class CommonUtil {
      * 关闭appium服务、报告、xmind
      * @param driver
      */
-    public static void exitCrawler(AppiumDriver driver){
-        try {
-            driver.quit();    
-        }finally {
-            ExtentReportManager.getExtentReports().flush();
-            XmindUtil.getInstance().saveWorkBook();
+    public static void stopCrawler(AppiumDriver driver){
+        if (driver != null){
+            driver.quit();
         }
+        ExtentReportManager.getExtentReports().flush();
+        XmindUtil.getInstance().saveWorkBook();
     }
 
     /**

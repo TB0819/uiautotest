@@ -12,6 +12,7 @@ import com.ui.entity.NodeStatus;
 import com.ui.util.CommonUtil;
 import io.appium.java_client.AppiumDriver;
 import org.dom4j.Element;
+import org.dom4j.Node;
 import org.openqa.selenium.WebElement;
 
 import java.util.*;
@@ -162,22 +163,22 @@ public class NodeFactory {
 //     * @return 返回节点的名称
 //     */
 //    private String getElementName(Element element) {
-//        String nodetext = "";
-//        String text = element.attributeValue("text");
+//        String nodeText = "";
+//        String text = element.attributeValue(ComConstant.TEXT);
 //        if (text != null && !"".equals(text)) {
-//            return nodetext = text;
+//            return nodeText = text;
 //        }
 //        for (int i = 0; i < element.nodeCount(); i++) {
 //            Node node = element.node(i);
-//            if (node instanceof Element && "".equals(nodetext) || null == nodetext) {
+//            if (node instanceof Element && "".equals(nodeText) || null == nodeText) {
 //                text = ((Element) node).attributeValue("text");
 //                if (text != null && !"".equals(text)) {
-//                    return nodetext = text;
+//                    return nodeText = text;
 //                }
-//                nodetext = getElementName((Element) node);
+//                nodeText = getElementName((Element) node);
 //            }
 //        }
-//        return nodetext;
+//        return nodeText;
 //    }
 
 //    /**

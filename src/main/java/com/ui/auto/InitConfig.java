@@ -28,6 +28,9 @@ public class InitConfig {
 	private AppiumDriver driver;
 
 	private InitConfig() {
+	}
+
+	public void init(){
 		ExtentReportManager.getInstance();
 		try {
 			loadYml();
@@ -48,11 +51,11 @@ public class InitConfig {
 	 * 加载配置文件
 	 */
 	public void loadYml() throws FileNotFoundException {
-		ExtentReportManager.createSuccessLog("开始加载配置文件");
+		ExtentReportManager.createSuccessLog("初始化配置...");
 		Yaml yaml = new Yaml();
 		File ymlFile = new File(ComConstant.CONFIG_PATH);
 		config = yaml.loadAs(new FileInputStream(ymlFile), Config.class);
-		ExtentReportManager.createSuccessLog("YML配置加载成功，路径："+ymlFile.getAbsolutePath());
+		ExtentReportManager.createSuccessLog(String.format("YML配置文件加载成功，路径：%s",ymlFile.getAbsolutePath()));
 		setTriggerAction(config);
 	}
 
@@ -95,7 +98,6 @@ public class InitConfig {
 	 * 创建系统截图目录(Android或者IOS)
 	 */
 	private void createSnapshotPath(){
-		ExtentReportManager.createSuccessLog("开始创建截图目录");
 		String screenshot_path = config.getScreenshotPath();
 		File file2, file;
 
@@ -112,13 +114,11 @@ public class InitConfig {
 		}
 		// 创建子目录
 		if (!file.exists()) {
-			if (file.mkdir()) {
-				ExtentReportManager.createSuccessLog("截图目录创建成功，路径："+file.getAbsolutePath());
-			} else {
-				ExtentReportManager.createFailLog("截图目录创建成功，路径："+file.getAbsolutePath(),null);
+			if (!file.mkdir()) {
+				ExtentReportManager.createFailLog(String.format("截图目录初始化失败，路径：%s",file.getAbsolutePath()),null);
 			}
 		}
-		ExtentReportManager.createSuccessLog("截图目录已存在，路径："+file.getAbsolutePath());
+		ExtentReportManager.createSuccessLog(String.format("截图目录初始化成功，路径：%s",file.getAbsolutePath()));
 	}
 
 	public static InitConfig getInstance() {

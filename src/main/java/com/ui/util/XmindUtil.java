@@ -36,7 +36,9 @@ public class XmindUtil {
      */
     public void saveWorkBook(){
         try {
-            workbook.save(ComConstant.XMIND_PATH);
+            if (workbook != null){
+                workbook.save(ComConstant.XMIND_PATH);
+            }
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CoreException e) {

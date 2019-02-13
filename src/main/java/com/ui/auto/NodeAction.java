@@ -7,14 +7,12 @@ import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebElement;
 
 import java.util.List;
 import java.util.Random;
 
 /**
- * TODO 后续改成接口动态代理方式提供可修改
  * 页面元素操作抽象类
  */
 public abstract class NodeAction {
@@ -27,10 +25,11 @@ public abstract class NodeAction {
 
     /**
      * 元素节点操作之前处理
+     * @param pageUrl       当前所在页面
      * @param actionEnum    操作类型
      * @param elementNode   元素节点
      */
-    protected abstract void before(ActionEnum actionEnum, ElementNode elementNode);
+    protected abstract String before(String pageUrl, ActionEnum actionEnum, ElementNode elementNode);
 
     /**
      * 执行特殊处理或进入测试步骤之前处理
@@ -42,10 +41,12 @@ public abstract class NodeAction {
 
     /**
      * 元素节点操作之后处理
+     * @param pageUrl       当前所在页面
      * @param actionEnum    操作类型
      * @param elementNode   元素节点
+     * @param screenShotPath 截图路径
      */
-    protected abstract void after(ActionEnum actionEnum, ElementNode elementNode);
+    protected abstract void after(String pageUrl,ActionEnum actionEnum, ElementNode elementNode, String screenShotPath);
 
     /**
      * 执行特殊处理或进入测试步骤之后处理
@@ -57,36 +58,38 @@ public abstract class NodeAction {
 
     /**
      * 元素节点操作出现异常之后处理
+     * @param pageUrl       当前所在页面
+     * @param screenShotPath 截图路径
      * @param actionEnum    操作类型
      * @param elementNode   元素节点
      * @param e             异常
      */
-    protected abstract void afterToThrowable(ActionEnum actionEnum, ElementNode elementNode, Throwable e);
+    protected abstract void afterToThrowable(String pageUrl, String screenShotPath, ActionEnum actionEnum, ElementNode elementNode, Throwable e);
 
     /**
      * 执行页面元素节点操作
+     * @param pageUrl       当前所在页面
      * @param actionEnum    操作类型
      * @param elementNode   元素节点
      * @return
      */
-    public boolean runAction(ActionEnum actionEnum, ElementNode elementNode){
+    public boolean runAction(String pageUrl, ActionEnum actionEnum, ElementNode elementNode){
         boolean flag = false;
-        WebElement element = null;
+        WebElement element;
+        String screenShotPath ="";
         try {
-            if (elementNode != null){
-                element = driver.findElementByXPath(elementNode.getXpath());
-                //  执行前处理
-                this.before(actionEnum,elementNode);
-            }
+            screenShotPath = this.before(pageUrl, actionEnum, elementNode);
             switch (actionEnum){
                 case BACK:
                     AndroidDriver androidDriver = (AndroidDriver) driver;
                     androidDriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
                     break;
                 case CLICK:
+                    element = driver.findElementByXPath(elementNode.getXpath());
                     element.click();
                     break;
                 case INPUT:
+                    element = driver.findElementByXPath(elementNode.getXpath());
                     element.clear();
                     String inputText = getInputText();
                     element.sendKeys(inputText);
@@ -94,13 +97,10 @@ public abstract class NodeAction {
                 default: break;
             }
             flag = true;
-        }catch (NoSuchElementException e1){
-            this.afterToThrowable(actionEnum,elementNode,e1);
+            this.after(pageUrl, actionEnum,elementNode,screenShotPath);
         }catch (Exception e){
-            this.afterToThrowable(actionEnum,elementNode,e);
+            this.afterToThrowable(pageUrl,screenShotPath,actionEnum,elementNode,e);
         }
-        //  执行后处理
-        this.after(actionEnum,elementNode);
         return flag;
     }
 

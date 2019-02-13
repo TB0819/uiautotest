@@ -28,7 +28,6 @@ public class AppiumManager {
      * @return
      */
     public AppiumDriver driverForAndroid(){
-        ExtentReportManager.createSuccessLog("开始启动Appium服务");
         AppiumServiceBuilder builder =  new AppiumServiceBuilder().withAppiumJS(new File(config.getAppiumJsPath()));
         Service = builder.build();
         Service.start();
@@ -44,6 +43,9 @@ public class AppiumManager {
         androidCapabilities.setCapability(MobileCapabilityType.NO_RESET, true);
         androidCapabilities.setCapability(MobileCapabilityType.UDID, config.getUdid());
         driver = new AndroidDriver(Service.getUrl(), androidCapabilities);
+        if (driver != null ){
+            ExtentReportManager.createSuccessLog("Appium服务初始化成功");
+        }
         return driver;
     }
 

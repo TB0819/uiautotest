@@ -49,7 +49,6 @@ public class Crawler {
             long endTime = System.currentTimeMillis();
             long time = endTime - startTime;
             if (isExit() || time>300000){
-                CommonUtil.exitCrawler(driver);
                 return;
             }
 
@@ -63,7 +62,7 @@ public class Crawler {
             currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
             PageNode existPage = allPageNodeMaps.get(currentPageUrl);
             if(existPage != null){
-                // TODO 判断页面结果是否发生变化,目前很慢，后续优化
+                // TODO 判断页面结构是否发生变化,目前很慢，后续优化
 //                if (num != 1){
 //                    PageNode newPage = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,currentPageNode,currentElementNode);
 //                    refreshStructure(newPage,existPage);
@@ -77,13 +76,13 @@ public class Crawler {
                         PageNode sonNode = getSonNode(existPage);
                         if (sonNode == null){
                             //情况2.1.1：没有子节点，触发返回操作
-                            nodeActionHandler.runAction(ActionEnum.BACK,null);
+                            nodeActionHandler.runAction(currentPageUrl, ActionEnum.BACK,null);
                             continue;
                         }
                         //情况2.1.2：子节点遍历完成，触发返回操作
                         NodeStatus sonStatus = sonNode.getNodeStatus();
                         if (sonStatus == NodeStatus.END){
-                            nodeActionHandler.runAction(ActionEnum.BACK,null);
+                            nodeActionHandler.runAction(currentPageUrl, ActionEnum.BACK,null);
                             continue;
                         }
                         //TODO 情况2.1.3：子节点还未遍历完成，继续遍历该页面下的子节点
@@ -97,7 +96,7 @@ public class Crawler {
                         break;
                     case SKIP:
                         //情况2.3：跳过遍历，触发返回操作
-                        nodeActionHandler.runAction(ActionEnum.BACK,null);
+                        nodeActionHandler.runAction(currentPageUrl, ActionEnum.BACK,null);
                         continue;
                     default:
                         Log.logFlow("节点遍历情况类型错误");
@@ -107,13 +106,13 @@ public class Crawler {
                 PageNode newPageNode = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,currentPageNode,currentElementNode);
                 //情况1.1：当前页面深度大于配置的深度，点击返回，不创建新页面的节点（点击返回不会出现新的页面，如有则会出现问题）
                 if (newPageNode == null){
-                    nodeActionHandler.runAction(ActionEnum.BACK,null);
+                    nodeActionHandler.runAction(currentPageUrl, ActionEnum.BACK,null);
                     continue;
                 }
                 allPageNodeMaps.put(newPageNode.getUrl(),newPageNode);
                 //情况1.2：页面没有可执行元素，跳过遍历，不加入任务栈中，并触发返回操作
                 if (newPageNode.getNodeStatus() == NodeStatus.SKIP){
-                    nodeActionHandler.runAction(ActionEnum.BACK,null);
+                    nodeActionHandler.runAction(currentPageUrl, ActionEnum.BACK,null);
                     continue;
                 }
                 //情况1.3：页面有可执行元素，将页面对象添加到任务栈，更新成第一个出栈
@@ -130,7 +129,7 @@ public class Crawler {
             }
             //获取元素节点，并执行操作
             currentElementNode = currentElementStack.pop();
-            boolean flag = nodeActionHandler.runAction(currentElementNode.getAction(),currentElementNode);
+            boolean flag = nodeActionHandler.runAction(currentPageUrl, currentElementNode.getAction(),currentElementNode);
             //设置元素遍历状态
             currentElementNode.setNodeStatus(flag ? NodeStatus.END : NodeStatus.FAIL);
             //重新将当前窗口页面节点更新至任务栈中判断后续操作
@@ -194,14 +193,13 @@ public class Crawler {
      */
     public void initStartPage(){
         /*  ====================== 执行进入被测首页面 ====================== */
-        ExtentReportManager.createSuccessLog("开始进入被测页面");
+        ExtentReportManager.createSuccessLog("初始化被测页面");
         List<Trigger> triggers = config.getStartPageAndroidStep();
         triggers.stream().forEach(p -> {
             WebElement element = driver.findElementByXPath(p.getXpath());
             nodeActionHandler.runTriggerAction(p.getActionEnum(),element,null);
         });
         /*  ====================== 首次进入加载当前页面为第一个节点 ====================== */
-        ExtentReportManager.createSuccessLog("加载首页面为第一个节点");
         Element currentRootElement = CommonUtil.refreshPageDocument(driver);
         this.currentPageUrl = CommonUtil.getPageUrl(driver,currentRootElement);
         PageNode firstPageNode = new NodeFactory(driver).createPageNode(currentRootElement,currentPageUrl,null,null);
@@ -209,7 +207,7 @@ public class Crawler {
         this.allPageNodeMaps.put(currentPageUrl,firstPageNode);
         this.currentPageNode = firstPageNode;
         XmindUtil.getInstance().createWorkBook(firstPageNode.getUrl());
-        ExtentReportManager.createSuccessLog("开始遍历");
+        ExtentReportManager.createSuccessLog(String.format("%s为首页面，并开始遍历...", currentPageUrl));
     }
 
     /**

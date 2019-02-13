@@ -1,13 +1,8 @@
 package com.ui.auto;
 
-import com.aventstack.extentreports.ExtentReports;
-import com.aventstack.extentreports.ExtentTest;
-import com.aventstack.extentreports.MediaEntityBuilder;
-import com.aventstack.extentreports.Status;
+import com.aventstack.extentreports.*;
 import com.aventstack.extentreports.gherkin.model.Feature;
 import com.aventstack.extentreports.reporter.ExtentHtmlReporter;
-import com.aventstack.extentreports.reporter.configuration.Protocol;
-import com.aventstack.extentreports.reporter.configuration.Theme;
 import com.ui.entity.ComConstant;
 import com.ui.util.Log;
 
@@ -36,21 +31,33 @@ public class ExtentReportManager {
 
     public static void createSuccessLog(String pageName,String elementText, String action ,String screenPath){
         try {
-            parentsNode.log(Status.PASS,"页面："+pageName +"<br> 元素：" + elementText +"<br> 动作："+action, MediaEntityBuilder.createScreenCaptureFromPath(screenPath).build());
+            parentsNode.log(Status.PASS,"当前页面："+pageName +"<br> 元素：" + elementText +"<br> 动作："+action, MediaEntityBuilder.createScreenCaptureFromPath(screenPath).build());
         } catch (IOException e) {
             Log.logError("执行动作报告生成失败",e);
         }
     }
 
     public static void createSuccessLog(String pageName,String elementText, String action){
-        parentsNode.log(Status.PASS,"页面："+pageName +"<br> 元素：" + elementText +"<br> 动作："+action);
+        parentsNode.log(Status.PASS,"当前页面："+pageName +"<br> 元素：" + elementText +"<br> 动作："+action);
     }
 
     public static void createFailLog(String message,Throwable e){
         parentsNode.log(Status.FAIL,message+ "<br>" +e);
     }
-    public static void createFailLog(String pageName,String elementText, String action,Throwable e){
-        parentsNode.log(Status.FAIL,"执行元素失败, 继续弹出下一个节点任务!<br>页面："+pageName +"<br> 元素：" +elementText +"<br> 动作："+action+ "<br>" +e);
+    public static void createFailLog(String pageName,String elementText, String action, String screenPath, Throwable e){
+        try {
+            parentsNode.log(Status.FAIL,"执行元素失败, 继续弹出下一个节点任务!<br>当前页面："+pageName +"<br> 元素：" +elementText +"<br> 动作："+action+ "<br>" +e, MediaEntityBuilder.createScreenCaptureFromPath(screenPath).build());
+        } catch (IOException e1) {
+            Log.logError("执行动作报告生成失败",e1);
+        }
+    }
+
+    public static void createFailLog(String pageName,String elementText, String action, String screenPath){
+        try {
+            parentsNode.log(Status.FAIL,"未发现当前元素, 继续弹出下一个节点任务!<br>当前页面："+pageName +"<br> 元素：" +elementText +"<br> 动作："+action, MediaEntityBuilder.createScreenCaptureFromPath(screenPath).build());
+        } catch (IOException e) {
+            Log.logError("执行动作报告生成失败",e);
+        }
     }
 
     private static ExtentReports createInstance(String fileName) {
