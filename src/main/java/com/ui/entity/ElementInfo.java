@@ -5,7 +5,7 @@ package com.ui.entity;
  * Created by cz on 2018-11-26.
  * @author cz
  */
-public class ElementNode {
+public class ElementInfo {
     /**
      *  pageUrl：        页面URL
      *  name：           元素名称

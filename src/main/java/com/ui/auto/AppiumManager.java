@@ -43,9 +43,6 @@ public class AppiumManager {
         androidCapabilities.setCapability(MobileCapabilityType.NO_RESET, true);
         androidCapabilities.setCapability(MobileCapabilityType.UDID, config.getUdid());
         driver = new AndroidDriver(Service.getUrl(), androidCapabilities);
-        if (driver != null ){
-            ExtentReportManager.createSuccessLog("Appium服务初始化成功");
-        }
         return driver;
     }
 

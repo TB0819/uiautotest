@@ -3,16 +3,11 @@ package com.ui.auto;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.Maps;
-import com.ui.entity.Config;
-import com.ui.entity.ComConstant;
-import com.ui.entity.ElementNode;
-import com.ui.entity.PageNode;
-import com.ui.entity.ActionEnum;
-import com.ui.entity.NodeStatus;
+import com.ui.entity.*;
+import com.ui.entity.ElementInfo;
 import com.ui.util.CommonUtil;
 import io.appium.java_client.AppiumDriver;
 import org.dom4j.Element;
-import org.dom4j.Node;
 import org.openqa.selenium.WebElement;
 
 import java.util.*;
@@ -37,7 +32,7 @@ public class NodeFactory {
      * @param parentElement 父页面执行元素
      * @return
      */
-    public PageNode createPageNode(Element rootElement,String pageUrl, PageNode parentNode, ElementNode parentElement) {
+    public PageInfo createPageNode(Element rootElement, String pageUrl, PageInfo parentNode, ElementInfo parentElement) {
         int pageDepth = parentNode == null? 1 : parentNode.getDepth()+1;
         //  当前页面深度大于配置深度则不解析页面节点
         if (pageDepth > config.getMaxDepth()){
@@ -48,24 +43,24 @@ public class NodeFactory {
             rootElement = CommonUtil.refreshPageDocument(driver);
         }
         //加载页面元素信息
-        List<ElementNode> elementNodes = getPageElements(pageUrl,rootElement);
-        Stack<ElementNode> taskStack = new Stack<ElementNode>();
-        taskStack.addAll(elementNodes);
+        List<ElementInfo> elementInfos = getPageElements(pageUrl,rootElement);
+        Stack<ElementInfo> taskStack = new Stack<ElementInfo>();
+        taskStack.addAll(elementInfos);
         //创建页面节点
-        PageNode pageNode = new PageNode();
-        pageNode.setUrl(pageUrl);
-        pageNode.setNodeStatus(elementNodes.isEmpty()?NodeStatus.SKIP: NodeStatus.EXECUTING);
-        pageNode.setParentNode(parentNode);
-        pageNode.setParentElement(parentElement);
-        pageNode.setDepth(pageDepth);
-        pageNode.setAllElementNodes(elementNodes);
-        pageNode.setStackElementNodes(taskStack);
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setUrl(pageUrl);
+        pageInfo.setNodeStatus(elementInfos.isEmpty()?NodeStatus.SKIP: NodeStatus.EXECUTING);
+        pageInfo.setParentNode(parentNode);
+        pageInfo.setParentElement(parentElement);
+        pageInfo.setDepth(pageDepth);
+        pageInfo.setAllElementInfos(elementInfos);
+        pageInfo.setStackElementInfos(taskStack);
         //  TODO 父节点暂时不放置，将当前页面节点加入父页面对象中
         if (parentNode != null){
-            parentNode.addSonPage(pageNode);
-            pageNode.setCrawlerLoc("/"+parentNode.getUrl()+"_"+ parentElement.getXpath());
+            parentNode.addSonPage(pageInfo);
+            pageInfo.setCrawlerLoc("/"+parentNode.getUrl()+"_"+ parentElement.getXpath());
         }
-        return pageNode;
+        return pageInfo;
     }
 
 
@@ -75,9 +70,9 @@ public class NodeFactory {
      * @param rootElement    当前页面xml
      * @return
      */
-    public List<ElementNode> getPageElements(String pageUrl, Element rootElement) {
+    public List<ElementInfo> getPageElements(String pageUrl, Element rootElement) {
         Map<String, Element> selectElements, blackElements, firstElements, lastElements;
-        List<ElementNode> crawlerNodes = new ArrayList<>();
+        List<ElementInfo> crawlerNodes = new ArrayList<>();
         List<Map<String, Element>> elements = new ArrayList<>();
 
         // 获取所有遍历元素
@@ -140,20 +135,20 @@ public class NodeFactory {
      * @param pageUrl   元素所在页面唯一标识url
      * @return
      */
-    private ElementNode createElementNode(Element element, String pageUrl) {
+    private ElementInfo createElementNode(Element element, String pageUrl) {
         String xpath = element.getUniquePath();
         String clazz = element.attributeValue(ComConstant.CLASS);
-        ElementNode eLementNode = new ElementNode();
-        eLementNode.setPageUrl(pageUrl);
-        eLementNode.setName(element.attributeValue(ComConstant.TEXT));
-        eLementNode.setClassName(clazz);
-        eLementNode.setContentDesc(element.attributeValue(ComConstant.CONTENT_DESC));
-        eLementNode.setResource_id(element.attributeValue(ComConstant.RESOURCE_ID));
-        eLementNode.setBounds(element.attributeValue(ComConstant.BOUNDS));
-        eLementNode.setXpath(xpath);
-        eLementNode.setAction(ComConstant.EDIT_TEXT.equals(clazz) ? ActionEnum.INPUT : ActionEnum.CLICK);
-        eLementNode.setCrawlerLoc("/"+pageUrl+"_"+ xpath);
-        return eLementNode;
+        ElementInfo eLementInfo = new ElementInfo();
+        eLementInfo.setPageUrl(pageUrl);
+        eLementInfo.setName(element.attributeValue(ComConstant.TEXT));
+        eLementInfo.setClassName(clazz);
+        eLementInfo.setContentDesc(element.attributeValue(ComConstant.CONTENT_DESC));
+        eLementInfo.setResource_id(element.attributeValue(ComConstant.RESOURCE_ID));
+        eLementInfo.setBounds(element.attributeValue(ComConstant.BOUNDS));
+        eLementInfo.setXpath(xpath);
+        eLementInfo.setAction(ComConstant.EDIT_TEXT.equals(clazz) ? ActionEnum.INPUT : ActionEnum.CLICK);
+        eLementInfo.setCrawlerLoc("/"+pageUrl+"_"+ xpath);
+        return eLementInfo;
     }
 
 //    /**

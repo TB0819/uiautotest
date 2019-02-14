@@ -2,7 +2,7 @@ package com.ui.auto;
 
 import com.ui.entity.ActionEnum;
 import com.ui.entity.Config;
-import com.ui.entity.ElementNode;
+import com.ui.entity.ElementInfo;
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.nativekey.AndroidKey;
@@ -27,9 +27,9 @@ public abstract class NodeAction {
      * 元素节点操作之前处理
      * @param pageUrl       当前所在页面
      * @param actionEnum    操作类型
-     * @param elementNode   元素节点
+     * @param elementInfo   元素节点
      */
-    protected abstract String before(String pageUrl, ActionEnum actionEnum, ElementNode elementNode);
+    protected abstract String before(String pageUrl, ActionEnum actionEnum, ElementInfo elementInfo);
 
     /**
      * 执行特殊处理或进入测试步骤之前处理
@@ -43,10 +43,10 @@ public abstract class NodeAction {
      * 元素节点操作之后处理
      * @param pageUrl       当前所在页面
      * @param actionEnum    操作类型
-     * @param elementNode   元素节点
+     * @param elementInfo   元素节点
      * @param screenShotPath 截图路径
      */
-    protected abstract void after(String pageUrl,ActionEnum actionEnum, ElementNode elementNode, String screenShotPath);
+    protected abstract void after(String pageUrl, ActionEnum actionEnum, ElementInfo elementInfo, String screenShotPath);
 
     /**
      * 执行特殊处理或进入测试步骤之后处理
@@ -61,35 +61,35 @@ public abstract class NodeAction {
      * @param pageUrl       当前所在页面
      * @param screenShotPath 截图路径
      * @param actionEnum    操作类型
-     * @param elementNode   元素节点
+     * @param elementInfo   元素节点
      * @param e             异常
      */
-    protected abstract void afterToThrowable(String pageUrl, String screenShotPath, ActionEnum actionEnum, ElementNode elementNode, Throwable e);
+    protected abstract void afterToThrowable(String pageUrl, String screenShotPath, ActionEnum actionEnum, ElementInfo elementInfo, Throwable e);
 
     /**
      * 执行页面元素节点操作
      * @param pageUrl       当前所在页面
      * @param actionEnum    操作类型
-     * @param elementNode   元素节点
+     * @param elementInfo   元素节点
      * @return
      */
-    public boolean runAction(String pageUrl, ActionEnum actionEnum, ElementNode elementNode){
+    public boolean runAction(String pageUrl, ActionEnum actionEnum, ElementInfo elementInfo){
         boolean flag = false;
         WebElement element;
         String screenShotPath ="";
         try {
-            screenShotPath = this.before(pageUrl, actionEnum, elementNode);
+            screenShotPath = this.before(pageUrl, actionEnum, elementInfo);
             switch (actionEnum){
                 case BACK:
                     AndroidDriver androidDriver = (AndroidDriver) driver;
                     androidDriver.pressKey(new KeyEvent().withKey(AndroidKey.BACK));
                     break;
                 case CLICK:
-                    element = driver.findElementByXPath(elementNode.getXpath());
+                    element = driver.findElementByXPath(elementInfo.getXpath());
                     element.click();
                     break;
                 case INPUT:
-                    element = driver.findElementByXPath(elementNode.getXpath());
+                    element = driver.findElementByXPath(elementInfo.getXpath());
                     element.clear();
                     String inputText = getInputText();
                     element.sendKeys(inputText);
@@ -97,9 +97,9 @@ public abstract class NodeAction {
                 default: break;
             }
             flag = true;
-            this.after(pageUrl, actionEnum,elementNode,screenShotPath);
+            this.after(pageUrl, actionEnum, elementInfo,screenShotPath);
         }catch (Exception e){
-            this.afterToThrowable(pageUrl,screenShotPath,actionEnum,elementNode,e);
+            this.afterToThrowable(pageUrl,screenShotPath,actionEnum, elementInfo,e);
         }
         return flag;
     }

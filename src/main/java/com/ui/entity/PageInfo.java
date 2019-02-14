@@ -10,13 +10,13 @@ import java.util.Stack;
  * Created by cz on 2018-11-26.
  * @author cz
  */
-public class PageNode {
+public class PageInfo {
     /**
      * url：                 页面唯一标识(URL)
      * depth：               页面深度
      * nodeStatus：          页面遍历状态
-     * allElementNodes：     页面所有可执行元素
-     * stackElementNodes：   页面待执行元素任务栈
+     * allElementInfos：     页面所有可执行元素
+     * stackElementInfos：   页面待执行元素任务栈
      * crawlerLoc：          页面初次进入路径xMind
      * parentNode：          父节点：首次进入该页面的前一页面
      * parentElement：       父节点页面点击的元素
@@ -26,22 +26,22 @@ public class PageNode {
     private String url;
     private int depth;
     private NodeStatus nodeStatus;
-    private List<ElementNode> allElementNodes;
-    private Stack<ElementNode> stackElementNodes;
+    private List<ElementInfo> allElementInfos;
+    private Stack<ElementInfo> stackElementInfos;
     private String crawlerLoc;
-    private PageNode parentNode;
-    private ElementNode parentElement;
-    private List<PageNode> sonPages;
-    private List<Map<PageNode,ElementNode>> parentList;
+    private PageInfo parentNode;
+    private ElementInfo parentElement;
+    private List<PageInfo> sonPages;
+    private List<Map<PageInfo, ElementInfo>> parentList;
 
-    public void addSonPage(PageNode sonPage){
+    public void addSonPage(PageInfo sonPage){
         if (this.sonPages == null){
-            this.sonPages = new ArrayList<PageNode>();
+            this.sonPages = new ArrayList<PageInfo>();
         }
         this.sonPages.add(sonPage);
     }
 
-    public List<PageNode> getSonPages() {
+    public List<PageInfo> getSonPages() {
         return this.sonPages;
     }
 
@@ -54,20 +54,20 @@ public class PageNode {
         this.url = url;
     }
 
-    public ElementNode getParentElement() {
+    public ElementInfo getParentElement() {
         return parentElement;
     }
 
-    public void setParentElement(ElementNode parentElement) {
+    public void setParentElement(ElementInfo parentElement) {
         this.parentElement = parentElement;
     }
 
-    public List<ElementNode> getAllElementNodes() {
-        return allElementNodes;
+    public List<ElementInfo> getAllElementInfos() {
+        return allElementInfos;
     }
 
-    public void setAllElementNodes(List<ElementNode> allElementNodes) {
-        this.allElementNodes = allElementNodes;
+    public void setAllElementInfos(List<ElementInfo> allElementInfos) {
+        this.allElementInfos = allElementInfos;
     }
 
     public int getDepth() {
@@ -86,12 +86,12 @@ public class PageNode {
         this.nodeStatus = nodeStatus;
     }
 
-    public Stack<ElementNode> getStackElementNodes() {
-        return stackElementNodes;
+    public Stack<ElementInfo> getStackElementInfos() {
+        return stackElementInfos;
     }
 
-    public void setStackElementNodes(Stack<ElementNode> stackElementNodes) {
-        this.stackElementNodes = stackElementNodes;
+    public void setStackElementInfos(Stack<ElementInfo> stackElementInfos) {
+        this.stackElementInfos = stackElementInfos;
     }
 
     public String getCrawlerLoc() {
@@ -102,11 +102,11 @@ public class PageNode {
         this.crawlerLoc = crawlerLoc;
     }
 
-    public PageNode getParentNode() {
+    public PageInfo getParentNode() {
         return parentNode;
     }
 
-    public void setParentNode(PageNode parentNode) {
+    public void setParentNode(PageInfo parentNode) {
         this.parentNode = parentNode;
     }
 }

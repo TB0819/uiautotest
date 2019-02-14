@@ -1,6 +1,5 @@
 package com.ui.util;
 
-import com.ui.auto.ExtentReportManager;
 import com.ui.auto.InitConfig;
 import com.ui.entity.ComConstant;
 import com.ui.entity.Config;
@@ -27,19 +26,6 @@ import java.util.concurrent.TimeUnit;
 public class CommonUtil {
     private static final String DataFormat = "yyyy-MM-dd_HH_mm_ss";
     private static Config config  = InitConfig.getInstance().config;
-
-
-    /**
-     * 关闭appium服务、报告、xmind
-     * @param driver
-     */
-    public static void stopCrawler(AppiumDriver driver){
-        if (driver != null){
-            driver.quit();
-        }
-        ExtentReportManager.getExtentReports().flush();
-        XmindUtil.getInstance().saveWorkBook();
-    }
 
     /**
      * 获取当前页面XML

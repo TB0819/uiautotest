@@ -1,7 +1,7 @@
 package com.ui.auto;
 
 
-import com.ui.entity.ElementNode;
+import com.ui.entity.ElementInfo;
 import com.ui.util.Log;
 
 import javax.imageio.ImageIO;
@@ -16,19 +16,19 @@ import java.util.concurrent.*;
  * Created by Administrator on 2018-07-24.
  * 异步处理截图圈中操作元素
  */
-public class AsynTask {
+public class ScreenShotHighlight {
 
     /**
      * 异步执行任务
      * @param picturePath
-     * @param elementNode
+     * @param elementInfo
      */
-    public Future<Boolean> executeTask(String picturePath, ElementNode elementNode){
+    public Future<Boolean> executeTask(String picturePath, ElementInfo elementInfo){
         CompletableFuture<Boolean> future = new CompletableFuture<>();
         new Thread(()->{
             boolean flag = false;
             try {
-                highlight(picturePath,elementNode);
+                highLight(picturePath, elementInfo);
                 flag =true;
             }catch (Exception e){
                 Log.logError("截图圈中失败", e);
@@ -41,13 +41,13 @@ public class AsynTask {
     }
 
     /**
-     * 高亮元素截图，速度较慢，后续优化
+     * 高亮元素截图
      * @param picturePath   截图路径
-     * @param elementNode   元素节点
+     * @param elementInfo   元素节点
      */
-    private void highlight(String picturePath, ElementNode elementNode){
+    private void highLight(String picturePath, ElementInfo elementInfo){
         //获取元素坐标、宽度、高度
-        String bounds = elementNode.getBounds();
+        String bounds = elementInfo.getBounds();
         String[] strings =bounds.substring(1,bounds.length()-1).split("]\\[");
         String[] startIndex = strings[0].split(",");
         String[] endIndex = strings[1].split(",");

@@ -5,6 +5,7 @@ import com.ui.entity.ComConstant;
 import com.ui.entity.Config;
 import com.ui.entity.Trigger;
 import com.ui.util.Log;
+import com.ui.util.XmindUtil;
 import io.appium.java_client.AppiumDriver;
 import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.Yaml;
@@ -37,10 +38,13 @@ public class InitConfig {
 			createSnapshotPath();
 			AppiumManager manager =  new AppiumManager(this.config);
 			this.driver = manager.driverForAndroid();
+			if (driver == null ){
+				ExtentReportManager.createSuccessLog("Appium服务初始化失败");
+				this.status = true;
+				return;
+			}
+			ExtentReportManager.createSuccessLog("Appium服务初始化成功");
 			this.status = false;
-		}catch (FileNotFoundException e) {
-			this.status = true;
-			ExtentReportManager.createFailLog("初始化配置文件失败",e);
 		}catch (Exception e){
 			this.status = true;
 			ExtentReportManager.createFailLog("初始化配置失败",e);
@@ -81,6 +85,17 @@ public class InitConfig {
 		List<Trigger> triggerList = config.getTriggerList();
 		setAction(startList);
 		setAction(triggerList);
+	}
+
+	/**
+	 * 关闭appium服务、报告、xmind
+	 */
+	public void stop(){
+		if (driver != null){
+			driver.quit();
+		}
+		ExtentReportManager.getExtentReports().flush();
+		XmindUtil.getInstance().saveWorkBook();
 	}
 
 	/**

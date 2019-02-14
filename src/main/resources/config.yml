@@ -1,11 +1,17 @@
-#设备基本信息
-appiumJsPath: "C:\\Users\\Administrator\\node_modules\\appium\\build\\lib\\main.js"
+#########  设备基本信息 #########
+appiumJsPath: "C:\\worksoftware\\nodejs\\node_global\\node_modules\\appium\\build\\lib\\main.js"
 mobileVersion: "6.X"
 appActivity: ".ui.AppSplash"
 appPackage: "zmsoft.rest.supply"
 udid: "3DN4C16919001533"
 deviceName: "华为G9"
 #########  基础设置 #########
+#  遍历持续时间(单位：分)
+duration: 5
+#遍历深度
+maxDepth:  5
+#等待时间(单位：秒)
+waitSec: 3
 # 截图路径
 screenshotPath: "c:\\appuitest"
 # 轨迹图路径
@@ -13,10 +19,6 @@ xmindPath: "c:\\appuitest"
 #########  遍历设置 #########
 # 页面URL
 pageUrl: ""
-#遍历深度
-maxDepth:  5
-#等待时间(单位：秒)
-waitSec: 3
 #待输入的文本
 inputTestList:
   - "123"

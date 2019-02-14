@@ -9,9 +9,21 @@ import java.util.List;
  */
 public class Config {
     /**
-     * pageUrl：        页面唯一标识定位
+     * 基础信息
      * maxDepth：       遍历最大深度
+     * duration:        遍历持续时间,单位：分
      * waitSec：        操作元素等待时间
+     * screenshotPath:  截图目录路径
+     * xmindPath:       遍历轨迹图路径
+     */
+    private Integer maxDepth;
+    private Integer duration;
+    private Integer waitSec;
+    private String screenshotPath;
+    private String xmindPath;
+    /**
+     * 遍历规则
+     * pageUrl：        页面唯一标识定位
      * inputTestList： 输入框输入内容，随机取值
      * firstList：       最新遍历集合
      * selectedList：    中序遍历集合
@@ -25,8 +37,6 @@ public class Config {
      * IosValidPackageList：     除了APP本身的包名外 根据以下包名判断是否跳出了APP,当app跳转到以下app时被认为是合法，会继续遍历操作
      */
     private String pageUrl;
-    private Integer maxDepth;
-    private Integer waitSec;
     private List<String> inputTestList;
     private List<String> firstList;
     private List<String> selectedList;
@@ -35,8 +45,6 @@ public class Config {
     private List<String> whiteList;
     private List<Trigger> triggerList;
     private List<Trigger> startPageAndroidStep;
-    private String screenshotPath;
-    private String xmindPath;
     private List<String> pressBackPackageList;
     private List<String> androidValidPackageList;
     private List<String> iosValidPackageList;
@@ -243,5 +251,13 @@ public class Config {
 
     public void setTriggerList(List<Trigger> triggerList) {
         this.triggerList = triggerList;
+    }
+
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
     }
 }

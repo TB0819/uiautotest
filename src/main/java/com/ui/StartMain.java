@@ -13,7 +13,6 @@ import org.testng.annotations.Test;
  */
 public class StartMain {
     private InitConfig initConfig = InitConfig.getInstance();
-    private AppiumDriver driver;
 
     @BeforeClass
     public void beforeClass(){
@@ -25,8 +24,7 @@ public class StartMain {
         if (initConfig.getInitStatus()){
             return;
         }
-        driver = initConfig.getDriver();
-        Crawler crawler = new Crawler(driver);
+        Crawler crawler = new Crawler(initConfig.getDriver());
         // 执行进入遍历页面步骤
         crawler.initStartPage();
         // 遍历开始
@@ -35,6 +33,6 @@ public class StartMain {
 
     @AfterClass
     public void afterClass(){
-        CommonUtil.stopCrawler(driver);
+        initConfig.stop();
     }
 }

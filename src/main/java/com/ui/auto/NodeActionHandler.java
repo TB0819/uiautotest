@@ -2,8 +2,8 @@ package com.ui.auto;
 
 import com.ui.entity.ActionEnum;
 import com.ui.entity.ComConstant;
-import com.ui.entity.ElementNode;
-import com.ui.entity.PageNode;
+import com.ui.entity.ElementInfo;
+import com.ui.entity.PageInfo;
 import com.ui.util.CommonUtil;
 import com.ui.util.XmindUtil;
 import io.appium.java_client.AppiumDriver;
@@ -23,7 +23,7 @@ public class NodeActionHandler extends NodeAction{
     }
 
     @Override
-    protected String before(String pageUrl, ActionEnum actionEnum, ElementNode elementNode) {
+    protected String before(String pageUrl, ActionEnum actionEnum, ElementInfo elementInfo) {
         //截图
         return CommonUtil.captureScreenShot(driver,config);
     }
@@ -34,19 +34,19 @@ public class NodeActionHandler extends NodeAction{
     }
 
     @Override
-    protected void after(String pageUrl, ActionEnum actionEnum, ElementNode elementNode, String screenShotPath) {
-        if (elementNode == null){
+    protected void after(String pageUrl, ActionEnum actionEnum, ElementInfo elementInfo, String screenShotPath) {
+        if (elementInfo == null){
             ExtentReportManager.createSuccessLog(pageUrl,"",actionEnum.getDescription(),screenShotPath);
             return;
         }
-        elementNode.setScreenShotPath(screenShotPath);
-        String text = "".equals(elementNode.getName()) ? elementNode.getXpath():elementNode.getName();
+        elementInfo.setScreenShotPath(screenShotPath);
+        String text = "".equals(elementInfo.getName()) ? elementInfo.getXpath(): elementInfo.getName();
         //报告
         ExtentReportManager.createSuccessLog(pageUrl,text,actionEnum.getDescription(),screenShotPath);
         //xmind轨迹
-        addXmindNode(elementNode, ComConstant.XMIND_SUCCESS);
+        addXmindNode(elementInfo, ComConstant.XMIND_SUCCESS);
         //截图圈中
-        new AsynTask().executeTask(screenShotPath,elementNode);
+        new ScreenShotHighlight().executeTask(screenShotPath, elementInfo);
     }
 
     @Override
@@ -55,34 +55,34 @@ public class NodeActionHandler extends NodeAction{
     }
 
     @Override
-    protected void afterToThrowable(String pageUrl, String screenShotPath, ActionEnum actionEnum, ElementNode elementNode, Throwable e) {
-        String text = "".equals(elementNode.getName()) ? elementNode.getXpath():elementNode.getName();
+    protected void afterToThrowable(String pageUrl, String screenShotPath, ActionEnum actionEnum, ElementInfo elementInfo, Throwable e) {
+        String text = "".equals(elementInfo.getName()) ? elementInfo.getXpath(): elementInfo.getName();
         if (e instanceof NoSuchElementException){
             ExtentReportManager.createFailLog(pageUrl, text,actionEnum.getDescription(), screenShotPath);
         }else {
             ExtentReportManager.createFailLog(pageUrl, text,actionEnum.getDescription(),screenShotPath, e);
         }
-        addXmindNode(elementNode, ComConstant.XMIND_FAIL);
+        addXmindNode(elementInfo, ComConstant.XMIND_FAIL);
     }
 
     /**
      * 添加xmind节点
-     * @param elementNode   当前操作元素节点
+     * @param elementInfo   当前操作元素节点
      * @param status        执行状态
      */
-    private void addXmindNode(ElementNode elementNode, String status) {
-        if (elementNode == null) {
+    private void addXmindNode(ElementInfo elementInfo, String status) {
+        if (elementInfo == null) {
             return;
         }
-        PageNode currPageNode = Crawler.allPageNodeMaps.get(elementNode.getPageUrl());
+        PageInfo currPageInfo = Crawler.allPageNodeMaps.get(elementInfo.getPageUrl());
         XmindUtil xmindUtil = XmindUtil.getInstance();
         String topicId;
-        String xMindStr = StringUtils.isBlank(elementNode.getName()) ? elementNode.getXpath():elementNode.getName();
-        if (currPageNode.getParentNode() == null){
+        String xMindStr = StringUtils.isBlank(elementInfo.getName()) ? elementInfo.getXpath(): elementInfo.getName();
+        if (currPageInfo.getParentNode() == null){
             topicId = xmindUtil.createSonNode(xmindUtil.rootTopicId, xMindStr, status);
         } else {
-            topicId = xmindUtil.createSonNode(currPageNode.getParentElement().getXmindTopicId(), xMindStr, status);
+            topicId = xmindUtil.createSonNode(currPageInfo.getParentElement().getXmindTopicId(), xMindStr, status);
         }
-        elementNode.setXmindTopicId(topicId);
+        elementInfo.setXmindTopicId(topicId);
     }
 }
