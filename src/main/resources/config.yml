@@ -7,7 +7,7 @@ udid: "3DN4C16919001533"
 deviceName: "华为G9"
 #########  基础设置 #########
 #  遍历持续时间(单位：分)
-duration: 5
+duration: 10
 #遍历深度
 maxDepth:  5
 #等待时间(单位：秒)

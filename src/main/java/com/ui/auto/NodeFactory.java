@@ -18,7 +18,7 @@ import java.util.*;
  */
 public class NodeFactory {
     private AppiumDriver<WebElement> driver;
-    private Config config  = InitConfig.getInstance().config;
+    private Config config  = InitializeConfiguration.getInstance().config;
 
     public NodeFactory(AppiumDriver<WebElement> driver){
         this.driver = driver;
@@ -33,11 +33,6 @@ public class NodeFactory {
      * @return
      */
     public PageInfo createPageNode(Element rootElement, String pageUrl, PageInfo parentNode, ElementInfo parentElement) {
-        int pageDepth = parentNode == null? 1 : parentNode.getDepth()+1;
-        //  当前页面深度大于配置深度则不解析页面节点
-        if (pageDepth > config.getMaxDepth()){
-            return null;
-        }
         //  获取当前页面xml失败，需重新获取
         if (rootElement == null){
             rootElement = CommonUtil.refreshPageDocument(driver);
@@ -49,6 +44,12 @@ public class NodeFactory {
         //创建页面节点
         PageInfo pageInfo = new PageInfo();
         pageInfo.setUrl(pageUrl);
+        //  当前页面深度大于配置深度则设置跳过
+        int pageDepth = parentNode == null? 1 : parentNode.getDepth()+1;
+        if (pageDepth > config.getMaxDepth()){
+            pageInfo.setNodeStatus(NodeStatus.SKIP);
+            return pageInfo;
+        }
         pageInfo.setNodeStatus(elementInfos.isEmpty()?NodeStatus.SKIP: NodeStatus.EXECUTING);
         pageInfo.setParentNode(parentNode);
         pageInfo.setParentElement(parentElement);

@@ -17,7 +17,7 @@ import java.util.Random;
  */
 public abstract class NodeAction {
     private AppiumDriver driver;
-    protected Config config  = InitConfig.getInstance().config;
+    protected Config config  = InitializeConfiguration.getInstance().config;
 
     public NodeAction(AppiumDriver driver) {
         this.driver = driver;

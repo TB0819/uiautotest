@@ -1,6 +1,6 @@
 package com.ui.util;
 
-import com.ui.auto.InitConfig;
+import com.ui.auto.InitializeConfiguration;
 import com.ui.entity.ComConstant;
 import com.ui.entity.Config;
 import io.appium.java_client.AppiumDriver;
@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit;
  */
 public class CommonUtil {
     private static final String DataFormat = "yyyy-MM-dd_HH_mm_ss";
-    private static Config config  = InitConfig.getInstance().config;
+    private static Config config  = InitializeConfiguration.getInstance().config;
 
     /**
      * 获取当前页面XML

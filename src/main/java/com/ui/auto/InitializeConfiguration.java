@@ -13,49 +13,59 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 初始化配置类
- * 	1、创建报告对象
- * 	2、加载yml配置文件
- * 	3、创建截图路径
- * 	4、创建appium服务
  * @author  cz
  */
-public class InitConfig {
+public class InitializeConfiguration {
 	public Config config;
-	private boolean status;
+	private boolean status = true;
 	private AppiumDriver driver;
 
-	private InitConfig() {
+	private InitializeConfiguration() {
 	}
 
 	public void init(){
-		ExtentReportManager.getInstance();
 		try {
-			loadYml();
-			createSnapshotPath();
-			AppiumManager manager =  new AppiumManager(this.config);
-			this.driver = manager.driverForAndroid();
-			if (driver == null ){
-				ExtentReportManager.createSuccessLog("Appium服务初始化失败");
-				this.status = true;
-				return;
-			}
-			ExtentReportManager.createSuccessLog("Appium服务初始化成功");
-			this.status = false;
+			initializeDefaultConfig();
+			status = false;
 		}catch (Exception e){
-			this.status = true;
 			ExtentReportManager.createFailLog("初始化配置失败",e);
 		}
 	}
 
 	/**
-	 * 加载配置文件
+	 * 初始化默认配置
+	 * @throws FileNotFoundException
 	 */
-	public void loadYml() throws FileNotFoundException {
-		ExtentReportManager.createSuccessLog("初始化配置...");
+	private void initializeDefaultConfig() throws FileNotFoundException {
+		initializeExtentReport();
+		initializeYmlFile();
+		initializeSnapshotFile();
+		initializeAppiumDriver();
+	}
+
+	/**
+	 * 初始化extentReport
+	 */
+	private void initializeExtentReport(){
+		ExtentReportManager.getInstance();
+	}
+
+	/**
+	 * 初始化Appium driver 服务
+	 */
+	private void initializeAppiumDriver(){
+		AppiumManager manager =  new AppiumManager(this.config);
+		this.driver = manager.driverForAndroid();
+	}
+	/**
+	 * 初始加载配置文件
+	 */
+	private void initializeYmlFile() throws FileNotFoundException {
 		Yaml yaml = new Yaml();
 		File ymlFile = new File(ComConstant.CONFIG_PATH);
 		config = yaml.loadAs(new FileInputStream(ymlFile), Config.class);
@@ -81,10 +91,10 @@ public class InitConfig {
 		}
 	}
 	private void setTriggerAction(Config config){
-		List<Trigger> startList = config.getStartPageAndroidStep();
-		List<Trigger> triggerList = config.getTriggerList();
-		setAction(startList);
-		setAction(triggerList);
+		List<Trigger> triggers = new ArrayList<Trigger>();
+		triggers.addAll(config.getStartPageAndroidStep());
+		triggers.addAll(config.getTriggerList());
+		setAction(triggers);
 	}
 
 	/**
@@ -110,9 +120,9 @@ public class InitConfig {
 		return driver;
 	}
 	/**
-	 * 创建系统截图目录(Android或者IOS)
+	 * 初始创建系统截图目录(Android或者IOS)
 	 */
-	private void createSnapshotPath(){
+	private void initializeSnapshotFile(){
 		String screenshot_path = config.getScreenshotPath();
 		File file2, file;
 
@@ -133,14 +143,15 @@ public class InitConfig {
 				ExtentReportManager.createFailLog(String.format("截图目录初始化失败，路径：%s",file.getAbsolutePath()),null);
 			}
 		}
+		config.setScreenshotPath(file2.getAbsolutePath());
 		ExtentReportManager.createSuccessLog(String.format("截图目录初始化成功，路径：%s",file.getAbsolutePath()));
 	}
 
-	public static InitConfig getInstance() {
-		return InitConfig.ConfigHolder.instance;
+	public static InitializeConfiguration getInstance() {
+		return InitializeConfiguration.ConfigHolder.instance;
 	}
 
 	private static class ConfigHolder {
-		private static InitConfig instance = new InitConfig();
+		private static InitializeConfiguration instance = new InitializeConfiguration();
 	}
 }

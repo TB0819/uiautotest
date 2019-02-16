@@ -1,9 +1,7 @@
 package com.ui;
 
 import com.ui.auto.Crawler;
-import com.ui.auto.InitConfig;
-import com.ui.util.CommonUtil;
-import io.appium.java_client.AppiumDriver;
+import com.ui.auto.InitializeConfiguration;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
@@ -12,27 +10,24 @@ import org.testng.annotations.Test;
  * 启动类
  */
 public class StartMain {
-    private InitConfig initConfig = InitConfig.getInstance();
+    private InitializeConfiguration initializeConfiguration = InitializeConfiguration.getInstance();
 
     @BeforeClass
     public void beforeClass(){
-        initConfig.init();
+        initializeConfiguration.init();
     }
 
     @Test
     public void startRun(){
-        if (initConfig.getInitStatus()){
+        if (initializeConfiguration.getInitStatus()){
             return;
         }
-        Crawler crawler = new Crawler(initConfig.getDriver());
-        // 执行进入遍历页面步骤
-        crawler.initStartPage();
-        // 遍历开始
-        crawler.crawl();
+        Crawler crawler = new Crawler(initializeConfiguration.getDriver());
+        crawler.run();
     }
 
     @AfterClass
     public void afterClass(){
-        initConfig.stop();
+        initializeConfiguration.stop();
     }
 }
